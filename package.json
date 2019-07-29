@@ -1,0 +1,23 @@
+{
+  "name": "es",
+  "version": "0.0.1",
+  "description": "",
+  "bin": {
+    "es": "./bin/init.js"
+  },
+  "keywords": [],
+  "author": "Espeo",
+  "license": "MIT",
+  "homepage": "http://espeo.eu",
+  "dependencies": {
+    "commander": "^2.20.0",
+    "consolidate": "^0.15.1",
+    "handlebars": "^4.1.2",
+    "mkdirp": "^0.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": ""
+}
