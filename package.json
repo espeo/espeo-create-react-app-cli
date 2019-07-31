@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "bin": {
-    "es": "./bin/init.js"
+    "espeo": "./bin/init.js"
   },
   "keywords": [],
   "author": "Espeo",
