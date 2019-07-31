@@ -2,22 +2,30 @@
 
 const program = require("commander");
 const handlebars = require("handlebars");
+
 handlebars.registerHelper("toLowerCase", str => str.toLowerCase());
 handlebars.registerHelper("toUpperCase", str => str.toUpperCase());
 handlebars.registerHelper(
   "capitalize",
   str => str.charAt(0).toUpperCase() + str.slice(1)
 );
+
 program
   .version(require("../package").version, "-v, --version")
   .command("generate <type> <name> ")
   .option("-f, --functional", "functional component")
   .alias("g")
-  .description(
-    "Generate new file of one of the types:\n -action \n -reducer \n- store \n -container \n -functional component \n -class component"
-  )
+  .description("Generate new file or store")
   .action(() => {
-    require("./generate");
+    require("../commands/generate");
+  });
+
+program
+  .command("init <name>")
+  .alias("i")
+  .description("Create new boilerplate project")
+  .action(() => {
+    require("../commands/createNewProject");
   });
 
 program.on("command:*", () => {
