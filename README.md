@@ -5,13 +5,13 @@
 ### Initialize new project
 
 ```
-es init <folderName>
+espeo init <folderName>
 ```
 
 _or via alias_
 
 ```
-es i <folderName>
+espeo i <folderName>
 ```
 
 This command will create a clean copy of [Create-espeo-app boilerplate](https://bitbucket.org/espeoeu/create-espeo-app/) in `folderName` folder and install all NPM dependencies using Yarn.
@@ -19,39 +19,39 @@ This command will create a clean copy of [Create-espeo-app boilerplate](https://
 ### Generate new files
 
 ```
-es generate <type> <name>
+espeo generate <type> <name>
 
 ```
 
 _or via alias_
 
 ```
-es g <type> <name>
+espeo g <type> <name>
 ```
 
 Examples:
 
 - class component
   ```
-  es g component exampleComponent
+  espeo g component exampleComponent
   ```
 - functional component
   ```
-  es g component exampleComponent -f
+  espeo g component exampleComponent -f
   ```
 - container
   ```
-  es g container exampleContainer
+  espeo g container exampleContainer
   ```
 - reducer
   ```
-  es g reducer exampleReducer
+  espeo g reducer exampleReducer
   ```
 - action
   ```
-  es g action exampleAction
+  espeo g action exampleAction
   ```
 - store- create folder with selected name and with action, reducer and selector files and update `root-store.ts` file in project directory (providing it's in the upper directory tree)
   ```
-  es g store exampleStore
+  espeo g store exampleStore
   ```
