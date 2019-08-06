@@ -1,37 +1,79 @@
-const fs = require("fs-extra");
-const path = require("path");
-const shellExec = require("child_process").exec;
-const program = require("commander");
-const Spinner = require("cli-spinner").Spinner;
+const fs = require('fs-extra');
+const path = require('path');
+const shellExec = require('child_process').exec;
+const program = require('commander');
+const Spinner = require('cli-spinner').Spinner;
+const inquirer = require('inquirer');
+const questions = require('../bin/questions');
 
-const spinnerInstance = new Spinner("Installing dependencies... %s");
-spinnerInstance.setSpinnerString("|/-\\");
+const spinnerInstance = new Spinner('Installing dependencies... %s');
+spinnerInstance.setSpinnerString('|/-\\');
 
 const paths = {
   outputPath: path.join(process.cwd(), program.args[0]),
-  templates: path.join(__dirname, "../templates")
+  templates: path.join(__dirname, '../templates'),
 };
 
-const copyAssetsContent = async () => {
-  const templates = path.join(__dirname, "../packageTemplate");
-
+const copyAssetsContent = async includeCypress => {
+  const templates = path.join(__dirname, '../packageTemplate');
   try {
-    console.log("Copying boilerplate files...");
-    await fs.copy(templates, paths.outputPath);
-    console.log("Copying finished!");
+    console.log('Copying boilerplate files...');
+    await fs.copy(templates, paths.outputPath, {
+      filter: path => (includeCypress ? true : !path.includes('cypress')),
+    });
+
+    if (!includeCypress) {
+      await removeCypressFromPackage();
+    }
+
+    console.log('Copying finished!');
   } catch (err) {
     console.error(err);
   }
 };
-const init = async () => {
-  await copyAssetsContent();
-  spinnerInstance.start();
-  await shellExec(`cd ${program.args[0]} && yarn`, (err, stdout) => {
-    console.log(stdout);
 
-    console.log("Setup finished!");
-  });
+const removeCypressFromPackage = async () => {
+  try {
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(paths.outputPath, 'package.json')),
+    );
+
+    const scripts = ['cy:ci', 'cy:open', 'cy:run'];
+
+    for (const script of scripts) {
+      delete packageJson.scripts[script];
+    }
+
+    delete packageJson.devDependencies['cypress'];
+    fs.writeFileSync(
+      path.join(paths.outputPath, 'package.json'),
+      JSON.stringify(packageJson, null, 2),
+    );
+  } catch (err) {
+    console.log(
+      chalk.red(
+        'Could not read package.json in project folder! Check if file exists',
+      ),
+    );
+    return;
+  }
+};
+
+const init = async (includeCypress, packageManager) => {
+  await copyAssetsContent(includeCypress);
+  spinnerInstance.start();
+  await shellExec(
+    `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
+    (err, stdout) => {
+      console.log(stdout);
+
+      console.log('Setup finished!');
+    },
+  );
   spinnerInstance.stop();
 };
 
-init();
+inquirer.prompt(questions).then(async answers => {
+  const { includeCypress, packageManager } = answers;
+  init(includeCypress, packageManager);
+});

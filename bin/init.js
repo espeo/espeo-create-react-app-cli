@@ -1,45 +1,45 @@
 #!/usr/bin/env node
 
-const program = require("commander");
-const handlebars = require("handlebars");
+const program = require('commander');
+const handlebars = require('handlebars');
 
-handlebars.registerHelper("toLowerCase", str => str.toLowerCase());
-handlebars.registerHelper("toUpperCase", str => str.toUpperCase());
+handlebars.registerHelper('toLowerCase', str => str.toLowerCase());
+handlebars.registerHelper('toUpperCase', str => str.toUpperCase());
 handlebars.registerHelper(
-  "capitalize",
-  str => str.charAt(0).toUpperCase() + str.slice(1)
+  'capitalize',
+  str => str.charAt(0).toUpperCase() + str.slice(1),
 );
 
 program
-  .version(require("../package").version, "-v, --version")
-  .command("generate <type> <name> ")
-  .option("-f, --functional", "functional component")
-  .alias("g")
-  .description("Generate new file or store")
+  .version(require('../package').version, '-v, --version')
+  .command('generate <type> <name> ')
+  .option('-f, --functional', 'functional component')
+  .alias('g')
+  .description('Generate new file or store')
   .action(() => {
-    require("../commands/generate");
+    require('../commands/generate');
   });
 
 program
-  .command("init <name>")
-  .alias("i")
-  .description("Create new boilerplate project")
+  .command('init <name>')
+  .alias('i')
+  .description('Create new boilerplate project')
   .action(() => {
-    require("../commands/createNewProject");
+    require('../commands/createNewProject');
   });
 
-program.on("command:*", () => {
+program.on('command:*', () => {
   console.log(
     console.error(
-      "Invalid command \nSee --help for a list of available commands."
-    )
+      'Invalid command \nSee --help for a list of available commands.',
+    ),
   );
   process.exit(1);
 });
 
 if (process.argv.length > 6) {
   console.error(
-    "Invalid command!\nSee --help for a list of available commands."
+    'Invalid command!\nSee --help for a list of available commands.',
   );
   process.exit(1);
   return;
