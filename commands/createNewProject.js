@@ -51,9 +51,7 @@ const removeCypressFromPackage = async () => {
     );
   } catch (err) {
     console.log(
-      chalk.red(
-        'Could not read package.json in project folder! Check if file exists',
-      ),
+      'Could not read package.json in project folder! Check if file exists',
     );
     return;
   }
