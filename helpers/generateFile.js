@@ -41,7 +41,7 @@ const generateFile = (name, src, type, shouldMoveToStoreFolder = false) => {
             fs.writeFileSync(`${process.cwd()}/${fileName}.ts`, res);
           }
 
-          if (src.includes('reducer.ts' || type === 'reducer')) {
+          if (src.includes('reducer.ts')) {
             updateRootStore(name);
           }
 
