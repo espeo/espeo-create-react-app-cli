@@ -5,6 +5,7 @@ const program = require('commander');
 const Spinner = require('cli-spinner').Spinner;
 const inquirer = require('inquirer');
 const questions = require('../bin/questions');
+const exec = require('await-exec');
 
 const spinnerInstance = new Spinner('Installing dependencies... %s');
 spinnerInstance.setSpinnerString('|/-\\');
@@ -19,11 +20,16 @@ const copyAssetsContent = async includeCypress => {
 
   try {
     console.log('Updating CEA template...');
-    await shellExec('git submodule update', (err, stdout) => {
-      console.log(stdout);
+    await exec(
+      `cd  ${
+        process.mainModule.path
+      } && cd .. && git submodule update --remote`,
+      (err, stdout) => {
+        console.log(stdout);
 
-      console.log('CEA template update finished!');
-    });
+        console.log('CEA template update finished!');
+      },
+    );
     console.log('Copying CEA files...');
 
     await fs.copy(templates, paths.outputPath, {

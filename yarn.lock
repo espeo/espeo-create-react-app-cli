@@ -24,6 +24,11 @@ ansi-styles@^3.2.1:
   dependencies:
     color-convert "^1.9.0"
 
+await-exec@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/await-exec/-/await-exec-0.1.2.tgz#c4dc58b415f9daf34fc9d17549f40fbc4839fd6b"
+  integrity sha512-BQUiyBLScS0+YPnnCZZGjb78mZ8sQ8aKgxarDPNw05rpbaCS7VIQSLy2tgjZKct9Dn1xLbKMXOpA98OWei90zA==
+
 bluebird@^3.1.1:
   version "3.5.5"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
