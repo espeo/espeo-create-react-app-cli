@@ -1,0 +1,3 @@
+[submodule "packageTemplate"]
+	path = packageTemplate
+	url = git@bitbucket.org:espeoeu/create-espeo-app.git

@@ -16,8 +16,16 @@ const paths = {
 
 const copyAssetsContent = async includeCypress => {
   const templates = path.join(__dirname, '../packageTemplate');
+
   try {
-    console.log('Copying boilerplate files...');
+    console.log('Updating CEA template...');
+    await shellExec('git submodule update', (err, stdout) => {
+      console.log(stdout);
+
+      console.log('CEA template update finished!');
+    });
+    console.log('Copying CEA files...');
+
     await fs.copy(templates, paths.outputPath, {
       filter: path => (includeCypress ? true : !path.includes('cypress')),
     });
@@ -45,6 +53,7 @@ const removeCypressFromPackage = async () => {
     }
 
     delete packageJson.devDependencies['cypress'];
+
     fs.writeFileSync(
       path.join(paths.outputPath, 'package.json'),
       JSON.stringify(packageJson, null, 2),

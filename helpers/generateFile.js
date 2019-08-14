@@ -1,7 +1,7 @@
-const fs = require("fs");
-const render = require("consolidate").handlebars.render;
-const mkdirp = require("mkdirp");
-const updateRootStore = require("./updateRootStore");
+const fs = require('fs');
+const render = require('consolidate').handlebars.render;
+const mkdirp = require('mkdirp');
+const updateRootStore = require('./updateRootStore');
 
 const generateFile = (name, src, type, shouldMoveToStoreFolder = false) => {
   const file = fs.readFileSync(src);
@@ -22,17 +22,17 @@ const generateFile = (name, src, type, shouldMoveToStoreFolder = false) => {
     await renderFile()
       .then(res => {
         try {
-          let fileName = type === "index" ? type : `${name}.${type}`;
+          let fileName = type === 'index' ? type : `${name}.${type}`;
 
-          if (fileName.includes("functional") || fileName.includes("class")) {
+          if (fileName.includes('functional') || fileName.includes('class')) {
             fileName = fileName
-              .replace(/.functional/, "")
-              .replace(/.class/, "");
+              .replace(/.functional/, '')
+              .replace(/.class/, '');
           }
           if (shouldMoveToStoreFolder) {
             createSpecFolder();
 
-            const destinationPath = type.includes("test")
+            const destinationPath = type.includes('test')
               ? `${specFolderDist}/${fileName}.ts`
               : `${folderDir}/${fileName}.ts`;
 
@@ -41,7 +41,7 @@ const generateFile = (name, src, type, shouldMoveToStoreFolder = false) => {
             fs.writeFileSync(`${process.cwd()}/${fileName}.ts`, res);
           }
 
-          if (src.includes("reducer.ts")) {
+          if (src.includes('reducer.ts' || type === 'reducer')) {
             updateRootStore(name);
           }
 

@@ -43,15 +43,7 @@ Examples:
   ```
   espeo g container exampleContainer
   ```
-- reducer
-  ```
-  espeo g reducer exampleReducer
-  ```
-- action
-  ```
-  espeo g action exampleAction
-  ```
-- store- create folder with selected name and with action, reducer and selector files and update `root-store.ts` file in project directory (providing it's in the upper directory tree)
+- store- create folder with selected name and with action, reducer and selector files (also specs) and update `root-store.ts` file in project directory (providing it's in the upper directory tree)
   ```
   espeo g store exampleStore
   ```
