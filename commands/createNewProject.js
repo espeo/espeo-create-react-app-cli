@@ -22,8 +22,8 @@ const copyAssetsContent = async includeCypress => {
     console.log('Updating CEA template...');
     await exec(
       `cd  ${
-        process.mainModule.path
-      } && cd .. && git submodule update --remote`,
+        __dirname
+      } && cd .. && git submodule update --init --recursive`,
       (err, stdout) => {
         console.log(stdout);
 
