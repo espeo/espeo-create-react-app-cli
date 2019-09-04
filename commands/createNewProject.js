@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const shellExec = require('child_process').exec;
 const program = require('commander');
 const Spinner = require('cli-spinner').Spinner;
 const inquirer = require('inquirer');
@@ -21,9 +20,7 @@ const copyAssetsContent = async includeCypress => {
   try {
     console.log('Updating CEA template...');
     await exec(
-      `cd  ${
-        __dirname
-      } && cd .. && git submodule update --init --recursive`,
+      `cd  ${__dirname} && cd .. && git submodule update --init --recursive`,
       (err, stdout) => {
         console.log(stdout);
 
@@ -75,7 +72,7 @@ const removeCypressFromPackage = async () => {
 const init = async (includeCypress, packageManager) => {
   await copyAssetsContent(includeCypress);
   spinnerInstance.start();
-  await shellExec(
+  await exec(
     `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
     (err, stdout) => {
       console.log(stdout);
