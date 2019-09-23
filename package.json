@@ -1,14 +1,14 @@
 {
-  "name": "es",
-  "version": "0.0.1",
-  "description": "",
+  "name": "espeo",
+  "version": "0.1.0",
+  "description": "CLI for https://github.com/espeo/espeo-create-react-app",
   "bin": {
     "espeo": "./bin/init.js"
   },
   "keywords": [],
   "author": "Espeo",
   "license": "MIT",
-  "homepage": "http://espeo.eu",
+  "homepage": "https://github.com/espeo/espeo-create-react-app-cli",
   "dependencies": {
     "await-exec": "^0.1.2",
     "child_process": "1.0.2",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/espeo/espeo-create-react-app-cli"
   },
-  "bugs": ""
+  "bugs": "https://github.com/espeo/espeo-create-react-app-cli"
 }
