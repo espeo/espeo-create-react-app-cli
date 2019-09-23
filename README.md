@@ -14,7 +14,7 @@ _or via alias_
 espeo i <folderName>
 ```
 
-This command will create a clean copy of [Create-espeo-app boilerplate](https://bitbucket.org/espeoeu/create-espeo-app/) in `folderName` folder and install all NPM dependencies using Yarn or NPM (depending on the choices made during initialization). Also, depending on the choices made, Cypress configuration and dependencies may be added or not.
+This command will create a clean copy of [Create-espeo-app boilerplate](https://github.com/espeo/espeo-create-react-app) in `folderName` folder and install all NPM dependencies using Yarn or NPM (depending on the choices made during initialization). Also, depending on the choices made, Cypress configuration and dependencies may be added or not.
 
 ### Generate new files
 
