@@ -3,7 +3,7 @@
 ### Installation
 
 ```bash
-$ npm i -g create-espeo-app-cli
+$ npm i -g @espeo/create-espeo-app-cli
 ```
 
 ```bash

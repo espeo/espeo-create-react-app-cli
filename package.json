@@ -1,12 +1,12 @@
 {
   "name": "@espeo/create-espeo-app-cli",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "CLI for https://github.com/espeo/espeo-create-react-app",
   "bin": {
     "espeo": "./bin/init.js"
   },
-  "keywords": [],
-  "author": "Espeo",
+  "keywords": ["react", "boilerplate", "template", "create-espeo-app", "espeo"],
+  "author": "Espeo Software",
   "license": "MIT",
   "homepage": "https://github.com/espeo/espeo-create-react-app-cli",
   "dependencies": {
