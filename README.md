@@ -1,5 +1,15 @@
 # Create-espeo-app CLI
 
+### Installation
+
+```bash
+$ npm i -g create-espeo-app-cli
+```
+
+```bash
+$ yarn add @espeo/create-espeo-app-cli --global
+```
+
 ## Available commands
 
 ### Initialize new project
