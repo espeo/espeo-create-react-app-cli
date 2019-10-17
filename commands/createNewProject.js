@@ -18,15 +18,6 @@ const copyAssetsContent = async includeCypress => {
   const templates = path.join(__dirname, '../packageTemplate');
 
   try {
-    console.log('Updating CEA template...');
-    await exec(
-      `cd  ${__dirname} && cd .. && git submodule update --init --recursive`,
-      (err, stdout) => {
-        console.log(stdout);
-
-        console.log('CEA template update finished!');
-      },
-    );
     console.log('Copying CEA files...');
 
     await fs.copy(templates, paths.outputPath, {
