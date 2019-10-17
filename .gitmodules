@@ -1,4 +1,0 @@
-[submodule "packageTemplate"]
-	path = packageTemplate
-	url = https://github.com/espeo/espeo-create-react-app.git
-	brach = master
