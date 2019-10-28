@@ -1,6 +1,6 @@
 {
   "name": "@espeo/create-espeo-app",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "main": "src/main.tsx",
   "repository": "https://github.com/espeo/espeo-create-react-app",
   "author": "Espeo Software",
