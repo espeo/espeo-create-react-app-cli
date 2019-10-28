@@ -113,6 +113,8 @@ module.exports = (env, args) => {
       port: 4200,
       hot: true,
       inline: true,
+      writeToDisk: true,
+      historyApiFallback: true,
     },
   };
   return config;
