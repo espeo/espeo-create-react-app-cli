@@ -1,5 +1,4 @@
-import { Logic } from '@core/domain';
-import { ReturnType } from '@core/utils';
+import { ReturnType } from '@core/namespace';
 
 export enum {{capitalize name}}ActionTypes {
   FETCH_{{capitalize name}} = '[{{capitalize name}}] Fetch {{capitalize name}}',

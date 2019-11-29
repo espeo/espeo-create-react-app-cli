@@ -4,12 +4,12 @@ const mkdirp = require('mkdirp');
 const updateRootStore = require('./updateRootStore');
 
 const generateFileConfig = {
-  testFolderName: 'spec'
+  testFolderName: 'spec',
+  storeFolderName: 'store'
 }
 
 const makeDir = (dir) => {
   if (!fs.existsSync(dir)) {
-    console.log('create dir', dir)
     mkdirp.sync(dir);
   }
 };
@@ -19,7 +19,8 @@ const generateFile = async (params) => {
     targetName,
     targetPath,
     templateSrc,
-    type
+    type,
+    shouldMoveToStoreFolder
   } = params;
 
   if (
@@ -27,8 +28,12 @@ const generateFile = async (params) => {
     typeof templateSrc === 'undefined'
   ) return;
 
+  if (!fs.existsSync(templateSrc)) {
+    return;
+  }
+
   const file = fs.readFileSync(templateSrc);
-  let targetDir = `${process.cwd()}${targetPath.replace('.', '')}/${targetName}`
+  let targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
   const renderFile = () => render(file.toString(), { name: targetName });
 
   const res = await renderFile()
@@ -38,25 +43,31 @@ const generateFile = async (params) => {
 
   try {
     let fileName = type === 'index' ? type : `${targetName}.${type}`;
-
     if (fileName.includes('functional') || fileName.includes('class')) {
       fileName = fileName
         .replace(/.functional/, '')
         .replace(/.class/, '');
     }
-    
-    if (type.includes('test')) {
-      targetDir = `${targetDir}/${generateFileConfig.testFolderName}`;
+
+    let desiredDir;
+    if (shouldMoveToStoreFolder) {
+      desiredDir = `${targetDir}/${generateFileConfig.storeFolderName}/${type}`;
+    } else {
+      desiredDir = `${targetDir}/${targetName}`;
+      if (type.includes('test')) {
+        desiredDir = `${targetDir}/${targetName}/${generateFileConfig.testFolderName}`;
+      }
     }
 
-    makeDir(targetDir);
-    fs.writeFileSync(`${targetDir}/${fileName}.ts`, res);
+    makeDir(desiredDir);
+    fs.writeFileSync(`${desiredDir}/${fileName}.ts`, res);
+
 
     if (templateSrc.includes('reducer.ts')) {
       updateRootStore(targetName);
     }
 
-    console.log(`Successfully generated ${targetDir}/${fileName}.ts file`);
+    console.log(`Successfully generated ${desiredDir}/${fileName}.ts file`);
   } catch (error) {
     console.error(error);
   }
