@@ -1,6 +1,6 @@
 {
   "name": "@espeo/create-espeo-app-cli",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "CLI for https://github.com/espeo/espeo-create-react-app",
   "bin": {
     "espeo": "./bin/init.js"
@@ -19,12 +19,12 @@
     "await-exec": "^0.1.2",
     "child_process": "1.0.2",
     "cli-spinner": "0.2.10",
-    "commander": "^2.20.0",
+    "commander": "^4.0.1",
     "consolidate": "^0.15.1",
     "find-up": "4.1.0",
     "fs-extra": "^8.1.0",
-    "handlebars": "^4.1.2",
-    "inquirer": "^6.5.0",
+    "handlebars": "4.5.3",
+    "inquirer": "^7.0.1",
     "mkdirp": "^0.5.1"
   },
   "repository": {

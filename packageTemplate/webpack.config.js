@@ -4,6 +4,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -15,10 +16,14 @@ const getPath = file => path.resolve(__dirname, file);
 const currentPath = path.join(__dirname);
 
 const processEnvFiles = mode => {
+  const modeFile = mode === 'none' ? 'local' : mode;
+
   const baseEnvPath = `${currentPath}/.env`;
-  const envPath = `${baseEnvPath}.${mode}`;
+  const envPath = `${baseEnvPath}.${modeFile}`;
   const finalPath = fs.existsSync(envPath) ? envPath : baseEnvPath;
-  const fileEnv = dotenv.config({ path: finalPath }).parsed;
+  const fileEnv = dotenv.config({
+    path: finalPath,
+  }).parsed;
   const envKeys = Object.keys(fileEnv).reduce((prev, next) => {
     const prevCopy = JSON.parse(JSON.stringify(prev));
 
@@ -38,6 +43,7 @@ module.exports = (env, args) => {
     },
     output: {
       filename: isProduction ? './bundle.[hash].js' : './bundle.js',
+      chunkFilename: '[name].bundle.js',
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js'],
@@ -45,7 +51,8 @@ module.exports = (env, args) => {
         '@core': getPath('./src/app'),
         '@environments': getPath('./src/environments'),
         '@assets': getPath('./src/assets/'),
-        '@pages': getPath('src/app/pages'),
+        '@pages': getPath('./src/app/pages'),
+        '@styles': getPath('./src/app/styles'),
       },
     },
     module: {
@@ -84,8 +91,8 @@ module.exports = (env, args) => {
     plugins: [
       new webpack.DefinePlugin(processEnvFiles(args.mode)),
       new HtmlWebpackPlugin({
-        template: './src/index.html',
-        inject: 'body',
+        template: './public/index.html',
+        inject: false,
         minify: isProduction
           ? {
               removeComments: true,
@@ -105,14 +112,22 @@ module.exports = (env, args) => {
         filename: '[name].[hash].css',
         chunkFilename: '[id].css',
       }),
+      new CopyWebpackPlugin([
+        {
+          from: 'public',
+          ignore: ['index.html'],
+        },
+      ]),
     ]
       .concat(isProduction ? [] : [new webpack.HotModuleReplacementPlugin()])
       .concat(inAnalyze ? [new BundleAnalyzerPlugin()] : []),
     devServer: {
-      contentBase: path.join(__dirname, 'dist'),
+      contentBase: path.join(__dirname, 'public'),
       port: 4200,
       hot: true,
       inline: true,
+      writeToDisk: true,
+      historyApiFallback: true,
     },
   };
   return config;
