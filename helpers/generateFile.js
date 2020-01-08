@@ -3,59 +3,63 @@ const render = require('consolidate').handlebars.render;
 const mkdirp = require('mkdirp');
 const updateRootStore = require('./updateRootStore');
 
-const generateFile = (name, src, type, shouldMoveToStoreFolder = false) => {
-  const file = fs.readFileSync(src);
-  const renderFile = () => render(file.toString(), { name });
-  const folderDir = `${process.cwd()}/${name}`;
-  const specFolderDist = `${process.cwd()}/${name}/spec`;
+const generateFileConfig = {
+  testFolderName: 'spec'
+}
 
-  const createSpecFolder = async () => {
-    if (!fs.existsSync(specFolderDist)) {
-      await mkdirp(specFolderDist, err => {
-        if (err) throw err;
-      });
+const makeDir = (dir) => {
+  if (!fs.existsSync(dir)) {
+    console.log('create dir', dir)
+    mkdirp.sync(dir);
+  }
+};
+
+const generateFile = async (params) => {
+  const {
+    targetName,
+    targetPath,
+    templateSrc,
+    type
+  } = params;
+
+  if (
+    typeof targetName === 'undefined' ||
+    typeof templateSrc === 'undefined'
+  ) return;
+
+  const file = fs.readFileSync(templateSrc);
+  let targetDir = `${process.cwd()}${targetPath.replace('.', '')}/${targetName}`
+  const renderFile = () => render(file.toString(), { name: targetName });
+
+  const res = await renderFile()
+    .catch(err => {
+      throw err;
+    });
+
+  try {
+    let fileName = type === 'index' ? type : `${targetName}.${type}`;
+
+    if (fileName.includes('functional') || fileName.includes('class')) {
+      fileName = fileName
+        .replace(/.functional/, '')
+        .replace(/.class/, '');
     }
-  };
+    
+    if (type.includes('test')) {
+      targetDir = `${targetDir}/${generateFileConfig.testFolderName}`;
+    }
 
-  const init = async () => {
-    await createSpecFolder();
-    await renderFile()
-      .then(res => {
-        try {
-          let fileName = type === 'index' ? type : `${name}.${type}`;
+    makeDir(targetDir);
+    fs.writeFileSync(`${targetDir}/${fileName}.ts`, res);
 
-          if (fileName.includes('functional') || fileName.includes('class')) {
-            fileName = fileName
-              .replace(/.functional/, '')
-              .replace(/.class/, '');
-          }
-          if (shouldMoveToStoreFolder) {
-            createSpecFolder();
+    if (templateSrc.includes('reducer.ts')) {
+      updateRootStore(targetName);
+    }
 
-            const destinationPath = type.includes('test')
-              ? `${specFolderDist}/${fileName}.ts`
-              : `${folderDir}/${fileName}.ts`;
-
-            fs.writeFileSync(destinationPath, res);
-          } else {
-            fs.writeFileSync(`${process.cwd()}/${fileName}.ts`, res);
-          }
-
-          if (src.includes('reducer.ts')) {
-            updateRootStore(name);
-          }
-
-          console.log(`Successfully generated ${fileName}.ts file`);
-        } catch (error) {
-          console.error(error);
-        }
-      })
-      .catch(err => {
-        throw err;
-      });
-  };
-
-  init();
+    console.log(`Successfully generated ${targetDir}/${fileName}.ts file`);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 module.exports = generateFile;

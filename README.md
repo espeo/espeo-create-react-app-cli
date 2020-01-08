@@ -57,3 +57,7 @@ Examples:
   ```
   espeo g store exampleStore
   ```
+- You can generate scaffold under given path
+  ```
+  espeo g component /src/app/components/exampleComponent
+  ```
