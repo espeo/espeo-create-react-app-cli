@@ -14,7 +14,19 @@ const makeDir = (dir) => {
   }
 };
 
-const generateFile = async (targetName, targetPath, templateSrc, type, shouldMoveToStoreFolder = false) => {
+const generateFile = async (params) => {
+  const {
+    targetName,
+    targetPath,
+    templateSrc,
+    type
+  } = params;
+
+  if (
+    typeof targetName === 'undefined' ||
+    typeof templateSrc === 'undefined'
+  ) return;
+
   const file = fs.readFileSync(templateSrc);
   let targetDir = `${process.cwd()}${targetPath.replace('.', '')}/${targetName}`
   const renderFile = () => render(file.toString(), { name: targetName });
@@ -41,7 +53,7 @@ const generateFile = async (targetName, targetPath, templateSrc, type, shouldMov
     fs.writeFileSync(`${targetDir}/${fileName}.ts`, res);
 
     if (templateSrc.includes('reducer.ts')) {
-      updateRootStore(name);
+      updateRootStore(targetName);
     }
 
     console.log(`Successfully generated ${targetDir}/${fileName}.ts file`);
