@@ -60,4 +60,7 @@ Examples:
 - You can generate scaffold under given path
   ```
   espeo g component /src/app/components/exampleComponent
+  espeo g component ./src/app/components/exampleComponent
+  espeo g store /src/exampleStore
+  espeo g store ./src/exampleStore
   ```
