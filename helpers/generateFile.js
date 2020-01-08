@@ -1,7 +1,6 @@
 const fs = require('fs');
 const render = require('consolidate').handlebars.render;
 const mkdirp = require('mkdirp');
-const updateRootStore = require('./updateRootStore');
 
 const generateFileConfig = {
   testFolderName: 'spec',
@@ -61,11 +60,6 @@ const generateFile = async (params) => {
 
     makeDir(desiredDir);
     fs.writeFileSync(`${desiredDir}/${fileName}.ts`, res);
-
-
-    if (templateSrc.includes('reducer.ts')) {
-      updateRootStore(targetName);
-    }
 
     console.log(`Successfully generated ${desiredDir}/${fileName}.ts file`);
   } catch (error) {
