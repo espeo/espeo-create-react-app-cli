@@ -6,16 +6,18 @@ const generateFile = require('../helpers/generateFile');
 const generateStore = require('../helpers/generateStore');
 
 const name = program.args[1];
+const targetName = path.basename(name)
+const targetPath = path.dirname(name)
 let type = program.args[0];
 
-const testPath = path.join(__dirname, `../templates/${type}.test.ts`);
+const testSrc = path.join(__dirname, `../templates/${type}.test.ts`);
 const shouldBeFunctionalComponent = program.commands[0].functional;
 
 if (type === 'store') {
-  generateStore(name);
+  generateStore(targetName, targetPath);
 } else {
-  if (fs.existsSync(testPath)) {
-    generateFile(name, testPath, 'test');
+  if (fs.existsSync(testSrc)) {
+    generateFile(targetName, targetPath, testSrc, 'test');
   }
 
   if (type === 'component' && shouldBeFunctionalComponent) {
@@ -24,9 +26,9 @@ if (type === 'store') {
     type += '.class';
   }
 
-  const scaffold = path.join(__dirname, `../templates/${type}.ts`);
+  const scaffoldSrc = path.join(__dirname, `../templates/${type}.ts`);
 
-  if (scaffold && name) {
-    generateFile(name, scaffold, type);
+  if (scaffoldSrc && targetName) {
+    generateFile(targetName, targetPath, scaffoldSrc, type);
   }
 }
