@@ -1,9 +1,9 @@
 const path = require('path');
-const fs = require('fs');
 const program = require('commander');
 
 const generateFile = require('../helpers/generateFile');
 const generateStore = require('../helpers/generateStore');
+const filesManager = require('../helpers/filesManager');
 
 const name = program.args[1];
 const targetName = path.basename(name)
@@ -15,15 +15,12 @@ const shouldBeFunctionalComponent = program.commands[0].functional;
 if (type === 'store') {
   generateStore(targetName, targetPath);
 } else {
-  const testSrc = path.join(__dirname, `../templates/${type}.test.ts`);
-  if (fs.existsSync(testSrc)) {
-    generateFile({
-      targetName,
-      targetPath,
-      templateSrc: path.join(__dirname, `../templates/${type}.test.ts`),
-      type: 'test'
-    });
-  }
+  generateFile({
+    targetName,
+    targetPath,
+    templateSrc: filesManager.getTemplateFile(`${type}.test.ts`),
+    type: 'test'
+  });
 
   if (type === 'component' && shouldBeFunctionalComponent) {
     type += '.functional';
@@ -34,7 +31,7 @@ if (type === 'store') {
   generateFile({
     targetName,
     targetPath,
-    templateSrc: path.join(__dirname, `../templates/${type}.ts`),
+    templateSrc: filesManager.getTemplateFile(`${type}.ts`),
     type
   });
 }

@@ -3,25 +3,22 @@ const path = require('path');
 const program = require('commander');
 const Spinner = require('cli-spinner').Spinner;
 const inquirer = require('inquirer');
-const questions = require('../bin/questions');
 const exec = require('await-exec');
 const render = require('consolidate').handlebars.render;
+
+const config = require('../config');
+const filesManager = require('../helpers/filesManager');
 
 const spinnerInstance = new Spinner('Installing dependencies... %s');
 spinnerInstance.setSpinnerString('|/-\\');
 
-const paths = {
-  outputPath: path.join(process.cwd(), program.args[0]),
-  templates: path.join(__dirname, '../templates'),
-};
-
 const copyAssetsContent = async (includeCypress, middleware) => {
-  const templates = path.join(__dirname, '../packageTemplate');
+  const projectTemplate = path.join(__dirname, '../packageTemplate');
 
   try {
     console.info('Copying CEA files...');
 
-    await fs.copy(templates, paths.outputPath, {
+    await fs.copy(projectTemplate, filesManager.getOutputFile(''), {
       filter: path => (includeCypress ? true : !path.includes('cypress')),
     });
 
@@ -41,35 +38,30 @@ const copyAssetsContent = async (includeCypress, middleware) => {
 const setMiddleware = async middleware => {
   try {
     const packageJson = JSON.parse(
-      fs.readFileSync(path.join(paths.outputPath, 'package.json')),
+      fs.readFileSync(filesManager.getOutputFile('package.json')),
     );
 
-    let middleWareDeps = {
-      package: middleware === 'Redux Saga' ? 'redux-observable' : 'redux-saga',
-      file: middleware === 'Redux Saga' ? 'rootEpic.ts' : 'rootSaga.ts',
+    const middleWareDeps = {
+      package: middleware === config.supportedMiddlewares.reduxSaga ? 'redux-observable' : 'redux-saga',
+      file: middleware === config.supportedMiddlewares.reduxSaga ? config.projectFilesToOverride.rootEpic
+        : config.projectFilesToOverride.rootSaga,
     };
 
     delete packageJson.dependencies[middleWareDeps.package];
 
     await exec(
       `
-        rm '${path.join(
-          paths.outputPath,
-          'src',
-          'app',
-          'store',
-          middleWareDeps.file,
-        )}'
+        rm '${filesManager.getOutputFile(middleWareDeps.file)}'
       `,
       (err, stdout) => {
         console.log(stdout);
       },
     );
 
-    fillStoreConfig(middleware)
+    await fillStoreConfig(middleware)
 
     fs.writeFileSync(
-      path.join(paths.outputPath, 'package.json'),
+      filesManager.getOutputFile('package.json'),
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -82,7 +74,7 @@ const setMiddleware = async middleware => {
 const removeCypressFromPackage = async () => {
   try {
     const packageJson = JSON.parse(
-      fs.readFileSync(path.join(paths.outputPath, 'package.json')),
+      fs.readFileSync(filesManager.getOutputFile('package.json')),
     );
 
     const scripts = ['cy:ci', 'cy:open', 'cy:run'];
@@ -94,7 +86,7 @@ const removeCypressFromPackage = async () => {
     delete packageJson.devDependencies['cypress'];
 
     fs.writeFileSync(
-      path.join(paths.outputPath, 'package.json'),
+      filesManager.getOutputFile('package.json'),
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -106,17 +98,8 @@ const removeCypressFromPackage = async () => {
 };
 
 const fillStoreConfig = async middleware => {
-  const storeConfigSrc = path.join(
-      paths.outputPath,
-      'src',
-      'app',
-      'store',
-      'index.ts',
-    );
-  const storeConfigTemplateFile = fs.readFileSync(path.join(
-    __dirname,
-    `../templates/store/storeConfig.ts`,
-  ));
+  const storeConfigSrc = filesManager.getOutputFile(config.projectFilesToOverride.storeConfig);
+  const storeConfigTemplateFile = fs.readFileSync(filesManager.getTemplateFile('/store/storeConfig.ts'));
   if (!storeConfigTemplateFile) {
     console.error('Could not find store config template!');
     return;
@@ -125,13 +108,14 @@ const fillStoreConfig = async middleware => {
   try {
     const res = await render(storeConfigTemplateFile.toString(), {
       middleware,
-      reduxObservable: 'Redux Observable',
-      reduxSaga: 'Redux Saga'
+      supportedMiddlewares: config.supportedMiddlewares
     });
     fs.writeFileSync(storeConfigSrc, res);
     console.info('Successfuly updated store config file: ' + storeConfigSrc);
   } catch(e) {
     console.error(e);
+  } finally {
+    return;
   }
 }
 
@@ -149,7 +133,7 @@ const init = async (includeCypress, packageManager, middleware) => {
   spinnerInstance.stop();
 };
 
-inquirer.prompt(questions).then(async answers => {
+inquirer.prompt(config.questions).then(async answers => {
   const { includeCypress, packageManager, middleware } = answers;
   init(includeCypress, packageManager, middleware);
 });

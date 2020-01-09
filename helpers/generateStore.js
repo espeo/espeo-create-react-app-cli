@@ -1,7 +1,6 @@
-const path = require('path');
-const fs = require('fs');
 const generateFile = require('./generateFile');
 const updateRootStore = require('./updateRootStore');
+const filesManager = require('../helpers/filesManager');
 
 const generateStore = (targetName, targetPath) => {
   const storeScaffolds = ['actions', 'reducers', 'selectors'];
@@ -10,10 +9,7 @@ const generateStore = (targetName, targetPath) => {
     generateFile({
       targetName,
       targetPath,
-      templateSrc: path.join(
-        __dirname,
-        `../templates/store/${scaffold}/${scaffold}.test.ts`,
-      ),
+      templateSrc: filesManager.getTemplateFile(`store/${scaffold}/${scaffold}.test.ts`),
       type: scaffold + '.test',
       shouldMoveToStoreFolder: true
     });
@@ -21,10 +17,7 @@ const generateStore = (targetName, targetPath) => {
     generateFile({
       targetName,
       targetPath,
-      templateSrc: path.join(
-        __dirname,
-        `../templates/store/${scaffold}/index.ts`,
-      ),
+      templateSrc: filesManager.getTemplateFile(`store/${scaffold}/index.ts`),
       type: scaffold,
       shouldMoveToStoreFolder: true
     });
