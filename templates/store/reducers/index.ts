@@ -21,17 +21,19 @@ export const {{capitalize name}}Reducer = (
       return {
         ...state,
         isLoading: true,
+        isError: false
       };
     case {{ capitalize name }}ActionTypes.LOAD_{{ toUpperCase name }}:
       return {
         ...state,
         isLoading: false,
         data: action.payload,
+        isError: false
       };
     case {{ capitalize name }}ActionTypes.ERROR_{{ toUpperCase name }}:
       return {
         ...state,
-        isError: false,
+        isError: true
       };
   default:
     return state;
