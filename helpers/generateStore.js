@@ -1,26 +1,29 @@
-const path = require("path");
-const fs = require("fs");
-const generateFile = require("./generateFile");
+const generateFile = require('./generateFile');
+const updateRootStore = require('./updateRootStore');
+const filesManager = require('../helpers/filesManager');
 
-const generateStore = name => {
-  const storeScaffords = ["action", "reducer", "selectors", "index"];
+const generateStore = (targetName, targetPath) => {
+  const storeScaffolds = ['actions', 'reducers', 'selectors'];
 
-  for (const scaffold of storeScaffords) {
-    const testTemplate = path.join(
-      __dirname,
-      `../templates/store/spec/${scaffold}.test.ts`
-    );
+  for (const scaffold of storeScaffolds) {
+    generateFile({
+      targetName,
+      targetPath,
+      templateSrc: filesManager.getTemplateFile(`store/${scaffold}/${scaffold}.test.ts`),
+      type: scaffold + '.test',
+      shouldMoveToStoreFolder: true
+    });
 
-    const template = path.join(__dirname, `../templates/store/${scaffold}.ts`);
-
-    if (scaffold && name) {
-      generateFile(name, template, scaffold, true);
-    }
-
-    if (fs.existsSync(testTemplate)) {
-      generateFile(name, testTemplate, scaffold + ".test", true);
-    }
+    generateFile({
+      targetName,
+      targetPath,
+      templateSrc: filesManager.getTemplateFile(`store/${scaffold}/index.ts`),
+      type: scaffold,
+      shouldMoveToStoreFolder: true
+    });
   }
+
+  updateRootStore(targetName);
 };
 
 module.exports = generateStore;
