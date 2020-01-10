@@ -1,39 +1,40 @@
-import { {{capitalize name}}Actions, {{capitalize name}}ActionTypes } from '../actions';
+{{setVar "capitalizedName" (capitalize name)}}
+import { {{capitalizedName}}Actions, {{capitalizedName}}ActionTypes } from '../actions';
 
-export interface {{capitalize name}}State {
+export interface {{capitalizedName}}State {
   isLoading: boolean;
   isError: boolean;
   data: any
 }
 
-const defaultState: {{capitalize name}}State = {
+const defaultState: {{capitalizedName}}State = {
   isLoading: false,
   isError: false,
   data: null,
 };
 
-export const {{capitalize name}}Reducer = (
+export const {{capitalizedName}}Reducer = (
   state = defaultState,
-  action: {{capitalize name}}Actions,
-): {{capitalize name}}State => {
+  action: {{capitalizedName}}Actions,
+): {{capitalizedName}}State => {
   switch (action.type) {
-    case {{ capitalize name }}ActionTypes.FETCH_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.FETCH_{{ toUpperCase name }}:
       return {
         ...state,
         isLoading: true,
-        isError: false
+        isError: false,
       };
-    case {{ capitalize name }}ActionTypes.LOAD_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.LOAD_{{ toUpperCase name }}:
       return {
         ...state,
         isLoading: false,
         data: action.payload,
-        isError: false
+        isError: false,
       };
-    case {{ capitalize name }}ActionTypes.ERROR_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.ERROR_{{ toUpperCase name }}:
       return {
         ...state,
-        isError: true
+        isError: true,
       };
   default:
     return state;
