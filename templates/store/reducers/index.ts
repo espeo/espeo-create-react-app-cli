@@ -1,4 +1,6 @@
 {{setVar "capitalizedName" (capitalize name)}}
+{{setVar "upperCaseName" (toUpperCase name)}}
+
 import { {{capitalizedName}}Actions, {{capitalizedName}}ActionTypes } from '../actions';
 
 export interface {{capitalizedName}}State {
@@ -18,26 +20,26 @@ export const {{capitalizedName}}Reducer = (
   action: {{capitalizedName}}Actions,
 ): {{capitalizedName}}State => {
   switch (action.type) {
-    case {{ capitalizedName }}ActionTypes.FETCH_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.FETCH_{{ upperCaseName }}:
       return {
         ...state,
         isLoading: true,
         isError: false,
       };
-    case {{ capitalizedName }}ActionTypes.LOAD_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.LOAD_{{ upperCaseName }}:
       return {
         ...state,
         isLoading: false,
         data: action.payload,
         isError: false,
       };
-    case {{ capitalizedName }}ActionTypes.ERROR_{{ toUpperCase name }}:
+    case {{ capitalizedName }}ActionTypes.ERROR_{{ upperCaseName }}:
       return {
         ...state,
         isError: true,
       };
-  default:
-    return state;
+    default:
+      return state;
   }
 };
 

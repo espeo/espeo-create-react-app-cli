@@ -1,9 +1,11 @@
+{{setVar "capitalizedName" (capitalize name)}}
+
 import React, { PureComponent } from "react";
 
 interface Props {}
 
-export class {{capitalize name}} extends PureComponent<Props> {
+export class {{capitalizedName}} extends PureComponent<Props> {
   render() {
-    return <div>{{capitalize name}} component works!</div>;
+    return <div>{{capitalizedName}} component works!</div>;
   }
 }
