@@ -36,5 +36,8 @@ module.exports = {
     storeConfig: 'src/app/store/index.ts',
     package: 'package.json',
   },
-  templatesFolder: '/templates'
+  templatesFolder: '/templates',
+  projectTemplateRepositoryUrl: 'https://github.com/espeo/espeo-create-react-app.git',
+  projectTemplateVersion: '1.0.0',
+  projectTemplateDir: './templates/projectTemplate',
 }

@@ -17,7 +17,7 @@ const outputPath = program.args[0]
 const packageSrc = `${outputPath}/package.json`;
 
 const copyAssetsContent = async (includeCypress, middleware) => {
-  const projectTemplate = path.join(__dirname, '../packageTemplate');
+  const projectTemplate = path.join(__dirname, '..', config.projectTemplateDir);
 
   try {
     console.info('Copying CEA files...');

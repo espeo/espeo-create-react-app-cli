@@ -1,9 +1,7 @@
 const path = require('path');
 const find = require('find');
-const findUp = require('find-up');
 
 const config = require('../config');
-const appDir = path.dirname(require.main.filename);
 const maxDirectoryDepth = 10;
 
 let dirDepth = 0;
