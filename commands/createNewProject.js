@@ -8,9 +8,13 @@ const render = require('consolidate').handlebars.render;
 
 const config = require('../config');
 const filesManager = require('../helpers/filesManager');
+const manageProjectConfig = require('../helpers/manageProjectConfig');
 
 const spinnerInstance = new Spinner('Installing dependencies... %s');
 spinnerInstance.setSpinnerString('|/-\\');
+
+const outputPath = program.args[0]
+const packageSrc = `${outputPath}/package.json`;
 
 const copyAssetsContent = async (includeCypress, middleware) => {
   const projectTemplate = path.join(__dirname, '../packageTemplate');
@@ -18,7 +22,7 @@ const copyAssetsContent = async (includeCypress, middleware) => {
   try {
     console.info('Copying CEA files...');
 
-    await fs.copy(projectTemplate, filesManager.getOutputFile(''), {
+    await fs.copy(projectTemplate, filesManager.getOutputFile(`/${outputPath}`), {
       filter: path => (includeCypress ? true : !path.includes('cypress')),
     });
 
@@ -37,21 +41,22 @@ const copyAssetsContent = async (includeCypress, middleware) => {
 
 const setMiddleware = async middleware => {
   try {
+    const packagePath = filesManager.getOutputFile(`${outputPath}/package.json`);
     const packageJson = JSON.parse(
-      fs.readFileSync(filesManager.getOutputFile('package.json')),
+      fs.readFileSync(packagePath),
     );
 
-    const middleWareDeps = {
+    const middlewareToRemove = {
       package: middleware === config.supportedMiddlewares.reduxSaga ? 'redux-observable' : 'redux-saga',
       file: middleware === config.supportedMiddlewares.reduxSaga ? config.projectFilesToOverride.rootEpic
         : config.projectFilesToOverride.rootSaga,
     };
 
-    delete packageJson.dependencies[middleWareDeps.package];
+    delete packageJson.dependencies[middlewareToRemove.package];
 
     await exec(
       `
-        rm '${filesManager.getOutputFile(middleWareDeps.file)}'
+        rm '${filesManager.getOutputFile(`/${outputPath}/${middlewareToRemove.file}`)}'
       `,
       (err, stdout) => {
         console.log(stdout);
@@ -61,7 +66,7 @@ const setMiddleware = async middleware => {
     await fillStoreConfig(middleware)
 
     fs.writeFileSync(
-      filesManager.getOutputFile('package.json'),
+      packagePath,
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -74,7 +79,7 @@ const setMiddleware = async middleware => {
 const removeCypressFromPackage = async () => {
   try {
     const packageJson = JSON.parse(
-      fs.readFileSync(filesManager.getOutputFile('package.json')),
+      fs.readFileSync(filesManager.getOutputFile(packageSrc)),
     );
 
     const scripts = ['cy:ci', 'cy:open', 'cy:run'];
@@ -86,7 +91,7 @@ const removeCypressFromPackage = async () => {
     delete packageJson.devDependencies['cypress'];
 
     fs.writeFileSync(
-      filesManager.getOutputFile('package.json'),
+      filesManager.getOutputFile(packageSrc),
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -98,7 +103,7 @@ const removeCypressFromPackage = async () => {
 };
 
 const fillStoreConfig = async middleware => {
-  const storeConfigSrc = filesManager.getOutputFile(config.projectFilesToOverride.storeConfig);
+  const storeConfigSrc = filesManager.getOutputFile(`/${outputPath}/${config.projectFilesToOverride.storeConfig}`);
   const storeConfigTemplateFile = fs.readFileSync(filesManager.getTemplateFile('/store/storeConfig.ts'));
   if (!storeConfigTemplateFile) {
     console.error('Could not find store config template!');
@@ -121,6 +126,11 @@ const fillStoreConfig = async middleware => {
 
 const init = async (includeCypress, packageManager, middleware) => {
   await copyAssetsContent(includeCypress, middleware);
+
+  manageProjectConfig.generateConfig({
+    selectedMiddleware: middleware
+  }, outputPath);
+
   spinnerInstance.start();
   await exec(
     `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
