@@ -1,6 +1,6 @@
 {
   "name": "@espeo/create-espeo-app-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "CLI for https://github.com/espeo/espeo-create-react-app",
   "bin": {
     "espeo": "./bin/init.js"
