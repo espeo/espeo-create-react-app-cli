@@ -9,6 +9,7 @@ const render = require('consolidate').handlebars.render;
 const config = require('../config');
 const filesManager = require('../helpers/filesManager');
 const manageProjectConfig = require('../helpers/manageProjectConfig');
+const prettify = require('../helpers/prettify');
 
 const spinnerInstance = new Spinner('Installing dependencies... %s');
 spinnerInstance.setSpinnerString('|/-\\');
@@ -48,20 +49,33 @@ const setMiddleware = async middleware => {
 
     const middlewareToRemove = {
       package: middleware === config.supportedMiddlewares.reduxSaga ? 'redux-observable' : 'redux-saga',
-      file: middleware === config.supportedMiddlewares.reduxSaga ? config.projectFilesToOverride.rootEpic
-        : config.projectFilesToOverride.rootSaga,
+      files: middleware === config.supportedMiddlewares.reduxSaga ? 
+        [
+          config.projectFilesToOverride.rootEpic,
+          config.projectFilesToOverride.articlesEpic
+        ] :
+        [
+          config.projectFilesToOverride.rootSaga,
+          config.projectFilesToOverride.articlesSaga
+        ],
     };
 
     delete packageJson.dependencies[middlewareToRemove.package];
 
-    await exec(
-      `
-        rm '${filesManager.getOutputFile(`/${outputPath}/${middlewareToRemove.file}`)}'
-      `,
-      (err, stdout) => {
-        console.log(stdout);
-      },
-    );
+    try {
+      for (let fileToRemove of middlewareToRemove.files) {
+        await exec(
+          `
+            rm '${filesManager.getOutputFile(`/${outputPath}/${fileToRemove}`)}'
+          `,
+          (err, stdout) => {
+            console.log(stdout);
+          },
+        );
+      }
+    } catch({ stderr }) {
+      console.error(stderr);
+    }
 
     await fillStoreConfig(middleware)
 
@@ -111,10 +125,12 @@ const fillStoreConfig = async middleware => {
   }
   
   try {
-    const res = await render(storeConfigTemplateFile.toString(), {
-      middleware,
-      supportedMiddlewares: config.supportedMiddlewares
-    });
+    const res = prettify(
+      await render(storeConfigTemplateFile.toString(), {
+        middleware,
+        supportedMiddlewares: config.supportedMiddlewares
+      })
+    );
     fs.writeFileSync(storeConfigSrc, res);
     console.info('Successfuly updated store config file: ' + storeConfigSrc);
   } catch(e) {
@@ -127,20 +143,57 @@ const fillStoreConfig = async middleware => {
 const init = async (includeCypress, packageManager, middleware) => {
   await copyAssetsContent(includeCypress, middleware);
 
-  manageProjectConfig.generateConfig({
+  await manageProjectConfig.generateConfig({
     selectedMiddleware: middleware
   }, outputPath);
 
-  spinnerInstance.start();
-  await exec(
-    `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
-    (err, stdout) => {
-      console.log(stdout);
+  try {
+    await exec(
+      `cd ./${program.args[0]} && git init`,
+      (err, stdout) => {
+        console.log(stdout);
+      },
+    );
+  
+    spinnerInstance.start();
+    await exec(
+      `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
+      (err, stdout) => {
+        console.log(err);
+        console.log(stdout);
+      },
+    );
+    spinnerInstance.stop();
+    console.log('');
+    console.info('Setup finished!');
+  
+    await exec(
+      `cd ./${program.args[0]} && git add --ignore-errors .`,
+      (err, stdout) => {
+        console.log(err);
+        console.log(stdout);
+      },
+    );
+  } catch({ stdout, stderr }) {
+    stdout && stdout !== '' && console.error(stdout);
+    stderr && stderr !== '' && console.error(stderr);
+  }
+  
+  try {
+    await exec(
+      `cd ./${program.args[0]} && git commit -m "Initial commit from Create Espeo React App CLI"`,
+      (err, stdout) => {
+        console.log(err);
+        console.log(stdout);
+      },
+    );
+  } catch({ stdout, stderr }) {
+    stdout && stdout !== '' && console.error(stdout);
+    stderr && stderr !== '' && console.error(stderr);
+  }
 
-      console.info('Setup finished!');
-    },
-  );
-  spinnerInstance.stop();
+  console.info('Latest changes committed!');
+
 };
 
 inquirer.prompt(config.questions).then(async answers => {

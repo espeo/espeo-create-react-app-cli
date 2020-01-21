@@ -12,7 +12,7 @@ const getConfig = () => {
   return null;
 }
 
-const generateConfig = (config, outputPath) => {
+const generateConfig = async (config, outputPath) => {
   const configDest = filesManager.getOutputFile(`/${outputPath}/.espeo-cli`);
   const projectConfiguration = {
     ...getConfig(),
@@ -23,6 +23,8 @@ const generateConfig = (config, outputPath) => {
     configDest,
     JSON.stringify(projectConfiguration, null, 2)
   );
+
+  return
 }
 
 module.exports = {

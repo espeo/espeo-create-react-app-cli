@@ -33,6 +33,8 @@ module.exports = {
   projectFilesToOverride: {
     rootEpic: 'src/app/store/rootEpic.ts',
     rootSaga: 'src/app/store/rootSaga.ts',
+    articlesEpic: 'src/app/pages/MainArticles/store/epics/index.ts',
+    articlesSaga: 'src/app/pages/MainArticles/store/saga/index.ts',
     storeConfig: 'src/app/store/index.ts',
     package: 'package.json',
   },

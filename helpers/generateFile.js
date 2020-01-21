@@ -2,7 +2,7 @@ const fs = require('fs');
 const render = require('consolidate').handlebars.render;
 const mkdirp = require('mkdirp');
 
-const prettify = require("./prettify");
+const prettify = require('./prettify');
 
 const generateFileConfig = {
   testFolderName: 'spec',

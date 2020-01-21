@@ -8,14 +8,28 @@ const projectTemplateSrc = path.join(__dirname, '..', config.projectTemplateDir)
 
 const cloneProjectTemplate = async () => {
   if (!fs.existsSync(projectTemplateSrc)) {
-    await exec(
-      `
-        git clone ${config.projectTemplateRepositoryUrl} --branch ${config.projectTemplateVersion} ${projectTemplateSrc}
-      `,
-      (err, stdout) => {
-        console.log(stdout);
-      },
-    );
+    try {
+      await exec(
+        `
+          git clone ${config.projectTemplateRepositoryUrl} --branch ${config.projectTemplateVersion} ${projectTemplateSrc}
+        `,
+        (err, stdout) => {
+          console.log(stdout);
+        },
+      );
+
+      await exec(
+        `
+          rm -R ${projectTemplateSrc}/.git
+        `,
+        (err, stdout) => {
+          console.log(stdout);
+        },
+      );
+    } catch(err) {
+      console.error(err);
+    }
+
     console.log('Successfully cloned template repository');
     return
   }
