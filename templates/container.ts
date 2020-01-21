@@ -1,20 +1,22 @@
+{{setVar "capitalizedName" (capitalize name)}}
+
 import { connect } from "react-redux";
 
 import { RootStore } from "@core/store";
 
-import { {{capitalize name}} } from "./{{toLowerCase name}}.component";
+import { {{capitalizedName}} } from "./{{toLowerCase name}}.component";
 
-interface {{capitalize name}}PropsAttrs {}
+interface {{capitalizedName}}PropsAttrs {}
 
-interface {{capitalize name}}PropsActions {}
+interface {{capitalizedName}}PropsActions {}
 
-export type {{capitalize name}}Props = {{capitalize name}}PropsAttrs & {{capitalize name}}PropsActions;
+export type {{capitalizedName}}Props = {{capitalizedName}}PropsAttrs & {{capitalizedName}}PropsActions;
 
-const mapStateToProps = (store: RootStore): {{capitalize name}}PropsAttrs => ({});
+const mapStateToProps = (store: RootStore): {{capitalizedName}}PropsAttrs => ({});
 
-const mapDispatchToProps: {{capitalize name}}PropsActions = {};
+const mapDispatchToProps: {{capitalizedName}}PropsActions = {};
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)({{capitalize name}});
+)({{capitalizedName}});

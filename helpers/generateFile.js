@@ -2,6 +2,8 @@ const fs = require('fs');
 const render = require('consolidate').handlebars.render;
 const mkdirp = require('mkdirp');
 
+const prettify = require('./prettify');
+
 const generateFileConfig = {
   testFolderName: 'spec',
   storeFolderName: 'store'
@@ -33,12 +35,13 @@ const generateFile = async (params) => {
 
   const file = fs.readFileSync(templateSrc);
   let targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
-  const renderFile = () => render(file.toString(), { name: targetName });
 
-  const res = await renderFile()
-    .catch(err => {
-      throw err;
-    });
+  const res = prettify(
+    await render(file.toString(), { name: targetName })
+      .catch(err => {
+        throw err;
+      })
+  )
 
   try {
     let fileName = type === 'index' ? type : `${targetName}.${type}`;

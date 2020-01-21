@@ -1,26 +1,29 @@
+{{setVar "capitalizedName" (capitalize name)}}
+{{setVar "upperCaseName" (toUpperCase name)}}
+
 import { ReturnType } from '@core/namespace';
 
-export enum {{capitalize name}}ActionTypes {
-  FETCH_{{capitalize name}} = '[{{capitalize name}}] Fetch {{capitalize name}}',
-  LOAD_{{capitalize name}} = '[{{capitalize name}}] Load {{capitalize name}}',
-  ERROR_{{capitalize name}} = '[{{capitalize name}}] Error {{capitalize name}}',
+export enum {{capitalizedName}}ActionTypes {
+  FETCH_{{upperCaseName}} = '[{{capitalizedName}}] Fetch {{capitalizedName}}',
+  LOAD_{{upperCaseName}} = '[{{capitalizedName}}] Load {{capitalizedName}}',
+  ERROR_{{upperCaseName}} = '[{{capitalizedName}}] Error {{capitalizedName}}',
 }
 
-export const fetch{{capitalize name}} = () => ({
-  type: {{capitalize name}}ActionTypes.FETCH_{{capitalize name}},
+export const fetch{{capitalizedName}} = () => ({
+  type: {{capitalizedName}}ActionTypes.FETCH_{{upperCaseName}},
   payload: null,
 } as const);
 
-export const load{{capitalize name}} = (payload: Logic) => ({
-  type: {{capitalize name}}ActionTypes.LOAD_{{capitalize name}},
+export const load{{capitalizedName}} = (payload: Logic) => ({
+  type: {{capitalizedName}}ActionTypes.LOAD_{{upperCaseName}},
   payload,
 } as const);
 
-export const error{{capitalize name}} = () => ({
-  type: {{capitalize name}}ActionTypes.ERROR_{{capitalize name}},
+export const error{{capitalizedName}} = () => ({
+  type: {{capitalizedName}}ActionTypes.ERROR_{{upperCaseName}},
   payload: null,
 } as const);
 
-export type {{capitalize name}}Actions = ReturnType<typeof fetch{{capitalize name}}>
- | ReturnType<typeof load{{capitalize name}}>
- | ReturnType<typeof error{{capitalize name}}>;
+export type {{capitalizedName}}Actions = ReturnType<typeof fetch{{capitalizedName}}>
+ | ReturnType<typeof load{{capitalizedName}}>
+ | ReturnType<typeof error{{capitalizedName}}>;
