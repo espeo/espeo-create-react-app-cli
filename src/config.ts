@@ -43,7 +43,6 @@ export const projectFilesToOverride = {
   rootEpic: 'src/app/store/rootEpic.ts',
   rootSaga: 'src/app/store/rootSaga.ts',
   storeConfig: 'src/app/store/index.ts',
-  package: 'package.json',
 };
 
 export const templatesFolder = '/templates';

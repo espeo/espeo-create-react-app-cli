@@ -1,6 +1,7 @@
 import path from 'path';
 import { generateFile, generateStore, getTemplateFile } from 'helpers';
 import { UnexpectedCommandArgumentError } from 'errors';
+import { Command } from 'core';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
@@ -10,11 +11,11 @@ type GenerateCommandOptions = {
   shouldBeFunctionalComponent: boolean;
 };
 
-export const generate = ({
+export const generate: Command<GenerateCommandOptions> = async ({
   name,
   type,
   shouldBeFunctionalComponent,
-}: GenerateCommandOptions) => {
+}) => {
   if (type !== 'store' && type !== 'component')
     throw new UnexpectedCommandArgumentError('type');
 
@@ -26,21 +27,22 @@ export const generate = ({
     return;
   }
 
-  generateFile({
-    targetName,
-    targetPath,
-    templateSrc: getTemplateFile(`${type}.test.tsx`),
-    type: 'test',
-  });
-
   const componentType = `${type}.${
     shouldBeFunctionalComponent ? 'functional' : 'class'
   }`;
 
-  generateFile({
-    targetName,
-    targetPath,
-    templateSrc: getTemplateFile(`${type}.tsx`),
-    type: componentType,
-  });
+  await Promise.all([
+    generateFile({
+      targetName,
+      targetPath,
+      templateSrc: getTemplateFile(`${type}.test.tsx`),
+      type: 'test',
+    }),
+    generateFile({
+      targetName,
+      targetPath,
+      templateSrc: getTemplateFile(`${componentType}.tsx`),
+      type: componentType,
+    }),
+  ]);
 };

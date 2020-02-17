@@ -36,9 +36,6 @@ export const generateFile = async ({
   type,
   shouldMoveToStoreFolder,
 }: GenerateFileProps): Promise<void> => {
-  if (typeof targetName === 'undefined' || typeof templateSrc === 'undefined')
-    return;
-
   if (!fs.existsSync(templateSrc)) {
     return;
   }

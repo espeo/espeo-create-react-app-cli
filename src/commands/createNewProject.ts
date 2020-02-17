@@ -12,6 +12,7 @@ import {
   PackageManager,
 } from 'config';
 import { getOutputFile, getTemplateFile } from 'helpers';
+import { Command } from 'core';
 
 const copyAssetsContent = async (
   includeCypress: boolean,
@@ -153,12 +154,12 @@ const installDependencies = (packageManager: PackageManager): Promise<void> => {
   );
 };
 
-export const createNewProject = async ({
+export const createNewProject: Command<Answers> = async ({
   includeCypress,
   packageManager,
   middleware,
   ci,
-}: Answers): Promise<void> => {
+}) => {
   const spinnerInstance = new Spinner('Installing dependencies... %s');
   spinnerInstance.setSpinnerString('|/-\\');
 
