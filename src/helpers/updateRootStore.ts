@@ -1,17 +1,16 @@
-const fs = require('fs');
-const combineReducersContentMatch = /\({([^}]+)\}/;
-const findUp = require('find-up');
+import fs from 'fs';
+import findUp from 'find-up';
 
-const updateRootStore = async name => {
+const combineReducersContentMatch = /\({([^}]+)\}/;
+
+export const updateRootStore = async (name: string): Promise<void> => {
   const rootStoreFile = await findUp('store/rootReducer.ts');
   if (!rootStoreFile) {
     console.error('Could not find rootReducer file!');
     return;
   }
   const lowerCaseName = name.toLowerCase();
-
   const reducerName = name.charAt(0).toUpperCase() + name.slice(1);
-
   let rootStore = fs.readFileSync(rootStoreFile, 'utf-8');
 
   rootStore = rootStore.replace(
@@ -32,5 +31,3 @@ const updateRootStore = async name => {
     throw err;
   }
 };
-
-module.exports = updateRootStore;

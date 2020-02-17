@@ -1,33 +1,41 @@
-const fs = require('fs');
-const path = require('path');
-const render = require('consolidate').handlebars.render;
-const mkdirp = require('mkdirp');
+import fs from 'fs';
+import path from 'path';
+import { handlebars } from 'consolidate';
+import mkdirp from 'mkdirp';
+
+const { render } = handlebars;
 
 const generateFileConfig = {
   testFolderName: 'spec',
   storeFolderName: 'store',
 };
 
-const makeDir = dir => {
+const makeDir = (dir: string): void => {
   if (!fs.existsSync(dir)) {
     mkdirp.sync(dir);
   }
 };
 
-const getFileExtension = filePath => {
+const getFileExtension = (filePath: string): string => {
   const ext = path.extname(filePath || '').split('.');
   return ext[ext.length - 1];
 };
 
-const generateFile = async params => {
-  const {
-    targetName,
-    targetPath,
-    templateSrc,
-    type,
-    shouldMoveToStoreFolder,
-  } = params;
+type GenerateFileProps = {
+  targetName: string;
+  targetPath: string;
+  templateSrc: string;
+  type: string;
+  shouldMoveToStoreFolder?: boolean;
+};
 
+export const generateFile = async ({
+  targetName,
+  targetPath,
+  templateSrc,
+  type,
+  shouldMoveToStoreFolder,
+}: GenerateFileProps): Promise<void> => {
   if (typeof targetName === 'undefined' || typeof templateSrc === 'undefined')
     return;
 
@@ -70,5 +78,3 @@ const generateFile = async params => {
     console.error(error);
   }
 };
-
-module.exports = generateFile;

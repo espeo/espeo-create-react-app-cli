@@ -1,25 +1,30 @@
-const fs = require('fs-extra');
-const path = require('path');
-const program = require('commander');
-const Spinner = require('cli-spinner').Spinner;
-const inquirer = require('inquirer');
-const exec = require('await-exec');
-const render = require('consolidate').handlebars.render;
+import fs from 'fs-extra';
+import path from 'path';
+import program from 'commander';
+import { Spinner } from 'cli-spinner';
+import exec from 'await-exec';
+import { handlebars } from 'consolidate';
+import {
+  projectFilesToOverride,
+  Answers,
+  CI,
+  ReduxMiddleware,
+  PackageManager,
+} from 'config';
+import { getOutputFile, getTemplateFile } from 'helpers';
 
-const config = require('../config');
-const filesManager = require('../helpers/filesManager');
+const copyAssetsContent = async (
+  includeCypress: boolean,
+  middleware: ReduxMiddleware,
+  ci: CI,
+): Promise<void> => {
+  const projectTemplate = path.join(__dirname, '../../packageTemplate');
 
-const spinnerInstance = new Spinner('Installing dependencies... %s');
-spinnerInstance.setSpinnerString('|/-\\');
-
-const ciConfigPathPerSupportedCi = {
-  [config.supportedCI.gitlab]: '.gitlab-ci.yml',
-  [config.supportedCI.circle]: '.circleci',
-  [config.supportedCI.bitbucket]: 'bitbucket-pipelines.yml',
-};
-
-const copyAssetsContent = async (includeCypress, middleware, ci) => {
-  const projectTemplate = path.join(__dirname, '../packageTemplate');
+  const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
+    gitlab: '.gitlab-ci.yml',
+    circle: '.circleci',
+    bitbucket: 'bitbucket-pipelines.yml',
+  };
 
   try {
     console.info('Copying CEA files...');
@@ -28,7 +33,7 @@ const copyAssetsContent = async (includeCypress, middleware, ci) => {
       .filter(([key]) => key !== ci)
       .map(([_, files]) => files);
 
-    await fs.copy(projectTemplate, filesManager.getOutputFile(''), {
+    await fs.copy(projectTemplate, getOutputFile(''), {
       filter: path =>
         (includeCypress ? true : !path.includes('cypress')) &&
         !ciConfigFilesToRemove.some(file => path.includes(file)),
@@ -47,29 +52,27 @@ const copyAssetsContent = async (includeCypress, middleware, ci) => {
   }
 };
 
-const setMiddleware = async middleware => {
+const setMiddleware = async (middleware: ReduxMiddleware): Promise<void> => {
   try {
     const packageJson = JSON.parse(
-      fs.readFileSync(filesManager.getOutputFile('package.json')),
+      fs.readFileSync(getOutputFile('package.json')).toString(),
     );
 
     const middleWareDeps = {
       package:
-        middleware === config.supportedMiddlewares.reduxSaga
-          ? 'redux-observable'
-          : 'redux-saga',
+        middleware === 'reduxObservable' ? 'redux-observable' : 'redux-saga',
       file:
-        middleware === config.supportedMiddlewares.reduxSaga
-          ? config.projectFilesToOverride.rootEpic
-          : config.projectFilesToOverride.rootSaga,
+        middleware === 'reduxSaga'
+          ? projectFilesToOverride.rootEpic
+          : projectFilesToOverride.rootSaga,
     };
 
     delete packageJson.dependencies[middleWareDeps.package];
 
     await exec(
       `
-        rm '${filesManager.getOutputFile(middleWareDeps.file)}'
-      `,
+      rm '${getOutputFile(middleWareDeps.file)}'
+    `,
       (err, stdout) => {
         console.log(stdout);
       },
@@ -78,7 +81,7 @@ const setMiddleware = async middleware => {
     await fillStoreConfig(middleware);
 
     fs.writeFileSync(
-      filesManager.getOutputFile('package.json'),
+      getOutputFile('package.json'),
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -88,10 +91,10 @@ const setMiddleware = async middleware => {
   return;
 };
 
-const removeCypressFromPackage = async () => {
+const removeCypressFromPackage = async (): Promise<void> => {
   try {
     const packageJson = JSON.parse(
-      fs.readFileSync(filesManager.getOutputFile('package.json')),
+      fs.readFileSync(getOutputFile('package.json')).toString(),
     );
 
     const scripts = ['cy:ci', 'cy:open', 'cy:run'];
@@ -103,7 +106,7 @@ const removeCypressFromPackage = async () => {
     delete packageJson.devDependencies['cypress'];
 
     fs.writeFileSync(
-      filesManager.getOutputFile('package.json'),
+      getOutputFile('package.json'),
       JSON.stringify(packageJson, null, 2),
     );
   } catch (err) {
@@ -114,12 +117,12 @@ const removeCypressFromPackage = async () => {
   }
 };
 
-const fillStoreConfig = async middleware => {
-  const storeConfigSrc = filesManager.getOutputFile(
-    config.projectFilesToOverride.storeConfig,
-  );
+const fillStoreConfig = async (middleware: ReduxMiddleware): Promise<void> => {
+  const { render } = handlebars;
+
+  const storeConfigSrc = getOutputFile(projectFilesToOverride.storeConfig);
   const storeConfigTemplateFile = fs.readFileSync(
-    filesManager.getTemplateFile('/store/storeConfig.ts'),
+    getTemplateFile('/store/storeConfig.ts'),
   );
   if (!storeConfigTemplateFile) {
     console.error('Could not find store config template!');
@@ -129,7 +132,6 @@ const fillStoreConfig = async middleware => {
   try {
     const res = await render(storeConfigTemplateFile.toString(), {
       middleware,
-      supportedMiddlewares: config.supportedMiddlewares,
     });
     fs.writeFileSync(storeConfigSrc, res);
     console.info('Successfuly updated store config file: ' + storeConfigSrc);
@@ -140,10 +142,8 @@ const fillStoreConfig = async middleware => {
   }
 };
 
-const init = async ({ includeCypress, packageManager, middleware, ci }) => {
-  await copyAssetsContent(includeCypress, middleware, ci);
-  spinnerInstance.start();
-  await exec(
+const installDependencies = (packageManager: PackageManager): Promise<void> => {
+  return exec(
     `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
     (err, stdout) => {
       console.log(stdout);
@@ -151,7 +151,22 @@ const init = async ({ includeCypress, packageManager, middleware, ci }) => {
       console.info('Setup finished!');
     },
   );
-  spinnerInstance.stop();
 };
 
-inquirer.prompt(config.questions).then(init);
+export const createNewProject = async ({
+  includeCypress,
+  packageManager,
+  middleware,
+  ci,
+}: Answers): Promise<void> => {
+  const spinnerInstance = new Spinner('Installing dependencies... %s');
+  spinnerInstance.setSpinnerString('|/-\\');
+
+  await copyAssetsContent(includeCypress, middleware, ci);
+
+  spinnerInstance.start();
+
+  await installDependencies(packageManager);
+
+  spinnerInstance.stop();
+};

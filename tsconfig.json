@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es2018",
+    "baseUrl": "src",
+    "removeComments": true,
+    "esModuleInterop": true,
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}
