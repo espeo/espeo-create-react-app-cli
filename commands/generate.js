@@ -1,13 +1,12 @@
 const path = require('path');
 const program = require('commander');
-
 const generateFile = require('../helpers/generateFile');
 const generateStore = require('../helpers/generateStore');
 const filesManager = require('../helpers/filesManager');
 
 const name = program.args[1];
-const targetName = path.basename(name)
-const targetPath = path.dirname(name)
+const targetName = path.basename(name);
+const targetPath = path.dirname(name);
 let type = program.args[0];
 
 const shouldBeFunctionalComponent = program.commands[0].functional;
@@ -18,8 +17,8 @@ if (type === 'store') {
   generateFile({
     targetName,
     targetPath,
-    templateSrc: filesManager.getTemplateFile(`${type}.test.ts`),
-    type: 'test'
+    templateSrc: filesManager.getTemplateFile(`${type}.test.tsx`),
+    type: 'test',
   });
 
   if (type === 'component' && shouldBeFunctionalComponent) {
@@ -31,7 +30,7 @@ if (type === 'store') {
   generateFile({
     targetName,
     targetPath,
-    templateSrc: filesManager.getTemplateFile(`${type}.ts`),
-    type
+    templateSrc: filesManager.getTemplateFile(`${type}.tsx`),
+    type,
   });
 }
