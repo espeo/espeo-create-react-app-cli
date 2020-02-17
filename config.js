@@ -1,14 +1,22 @@
 const supportedMiddlewares = {
   reduxSaga: 'Redux Saga',
-  reduxObservable: 'Redux Observable'
-}
+  reduxObservable: 'Redux Observable',
+};
 
 const supportedPackageManagers = {
   npm: 'NPM',
-  yarn: 'Yarn'
-}
+  yarn: 'Yarn',
+};
+
+const supportedCI = {
+  bitbucket: 'Bitbucket',
+  circle: 'Circle',
+  gitlab: 'Gitlab',
+  none: 'none',
+};
 
 module.exports = {
+  supportedCI,
   supportedMiddlewares,
   supportedPackageManagers,
   questions: [
@@ -25,10 +33,16 @@ module.exports = {
     },
     {
       type: 'list',
+      name: 'ci',
+      message: 'Which CI configuration should be added?',
+      choices: Object.values(supportedCI),
+    },
+    {
+      type: 'list',
       name: 'middleware',
       message: 'Which Redux middleware should be in use?',
       choices: Object.values(supportedMiddlewares),
-    }
+    },
   ],
   projectFilesToOverride: {
     rootEpic: 'src/app/store/rootEpic.ts',
@@ -36,5 +50,5 @@ module.exports = {
     storeConfig: 'src/app/store/index.ts',
     package: 'package.json',
   },
-  templatesFolder: '/templates'
-}
+  templatesFolder: '/templates',
+};
