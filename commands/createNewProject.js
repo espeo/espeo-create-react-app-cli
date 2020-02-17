@@ -12,14 +12,26 @@ const filesManager = require('../helpers/filesManager');
 const spinnerInstance = new Spinner('Installing dependencies... %s');
 spinnerInstance.setSpinnerString('|/-\\');
 
-const copyAssetsContent = async (includeCypress, middleware) => {
+const ciConfigPathPerSupportedCi = {
+  [config.supportedCI.gitlab]: '.gitlab-ci.yml',
+  [config.supportedCI.circle]: '.circleci',
+  [config.supportedCI.bitbucket]: 'bitbucket-pipelines.yml',
+};
+
+const copyAssetsContent = async (includeCypress, middleware, ci) => {
   const projectTemplate = path.join(__dirname, '../packageTemplate');
 
   try {
     console.info('Copying CEA files...');
 
+    const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
+      .filter(([key]) => key !== ci)
+      .map(([_, files]) => files);
+
     await fs.copy(projectTemplate, filesManager.getOutputFile(''), {
-      filter: path => (includeCypress ? true : !path.includes('cypress')),
+      filter: path =>
+        (includeCypress ? true : !path.includes('cypress')) &&
+        !ciConfigFilesToRemove.some(file => path.includes(file)),
     });
 
     if (!includeCypress) {
@@ -42,9 +54,14 @@ const setMiddleware = async middleware => {
     );
 
     const middleWareDeps = {
-      package: middleware === config.supportedMiddlewares.reduxSaga ? 'redux-observable' : 'redux-saga',
-      file: middleware === config.supportedMiddlewares.reduxSaga ? config.projectFilesToOverride.rootEpic
-        : config.projectFilesToOverride.rootSaga,
+      package:
+        middleware === config.supportedMiddlewares.reduxSaga
+          ? 'redux-observable'
+          : 'redux-saga',
+      file:
+        middleware === config.supportedMiddlewares.reduxSaga
+          ? config.projectFilesToOverride.rootEpic
+          : config.projectFilesToOverride.rootSaga,
     };
 
     delete packageJson.dependencies[middleWareDeps.package];
@@ -58,7 +75,7 @@ const setMiddleware = async middleware => {
       },
     );
 
-    await fillStoreConfig(middleware)
+    await fillStoreConfig(middleware);
 
     fs.writeFileSync(
       filesManager.getOutputFile('package.json'),
@@ -98,29 +115,33 @@ const removeCypressFromPackage = async () => {
 };
 
 const fillStoreConfig = async middleware => {
-  const storeConfigSrc = filesManager.getOutputFile(config.projectFilesToOverride.storeConfig);
-  const storeConfigTemplateFile = fs.readFileSync(filesManager.getTemplateFile('/store/storeConfig.ts'));
+  const storeConfigSrc = filesManager.getOutputFile(
+    config.projectFilesToOverride.storeConfig,
+  );
+  const storeConfigTemplateFile = fs.readFileSync(
+    filesManager.getTemplateFile('/store/storeConfig.ts'),
+  );
   if (!storeConfigTemplateFile) {
     console.error('Could not find store config template!');
     return;
   }
-  
+
   try {
     const res = await render(storeConfigTemplateFile.toString(), {
       middleware,
-      supportedMiddlewares: config.supportedMiddlewares
+      supportedMiddlewares: config.supportedMiddlewares,
     });
     fs.writeFileSync(storeConfigSrc, res);
     console.info('Successfuly updated store config file: ' + storeConfigSrc);
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   } finally {
     return;
   }
-}
+};
 
-const init = async (includeCypress, packageManager, middleware) => {
-  await copyAssetsContent(includeCypress, middleware);
+const init = async ({ includeCypress, packageManager, middleware, ci }) => {
+  await copyAssetsContent(includeCypress, middleware, ci);
   spinnerInstance.start();
   await exec(
     `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
@@ -133,7 +154,4 @@ const init = async (includeCypress, packageManager, middleware) => {
   spinnerInstance.stop();
 };
 
-inquirer.prompt(config.questions).then(async answers => {
-  const { includeCypress, packageManager, middleware } = answers;
-  init(includeCypress, packageManager, middleware);
-});
+inquirer.prompt(config.questions).then(init);
