@@ -4,6 +4,7 @@ import { UnexpectedCommandArgumentError } from 'errors';
 import { Command } from 'core';
 import findUp from 'find-up';
 import fs from 'fs';
+import { storeScaffolds } from 'config';
 
 //TODO: use prettier with config from packageTemplate to format all things we generate
 
@@ -11,8 +12,6 @@ const generateStore = async (
   targetName: string,
   targetPath: string,
 ): Promise<void> => {
-  const storeScaffolds = ['actions', 'reducers', 'selectors'];
-
   await Promise.all(
     storeScaffolds.map(scaffold =>
       Promise.all([
@@ -21,14 +20,12 @@ const generateStore = async (
           targetPath,
           templateSrc: getTemplateFile(`store/${scaffold}/${scaffold}.test.ts`),
           type: scaffold + '.test',
-          shouldMoveToStoreFolder: true,
         }),
         generateFile({
           targetName,
           targetPath,
           templateSrc: getTemplateFile(`store/${scaffold}/index.ts`),
           type: scaffold,
-          shouldMoveToStoreFolder: true,
         }),
       ]),
     ),

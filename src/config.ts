@@ -1,6 +1,6 @@
 import { QuestionCollection } from 'inquirer';
 
-export type ReduxMiddleware = 'reduxSaga' | 'reduxObservable';
+export type ReduxMiddleware = 'redux-saga' | 'redux-observable';
 
 export type PackageManager = 'npm' | 'yarn';
 
@@ -35,7 +35,7 @@ export const questions: QuestionCollection<Answers> = [
     type: 'list',
     name: 'middleware',
     message: 'Which Redux middleware should be in use?',
-    choices: ['redux saga', 'redux observable'],
+    choices: ['redux-saga', 'redux-observable'],
   },
 ];
 
@@ -45,4 +45,7 @@ export const projectFilesToOverride = {
   storeConfig: 'src/app/store/index.ts',
 };
 
-export const templatesFolder = '/templates';
+export const templatesFolderName = 'templates';
+export const storeFolderName = 'store';
+export const testsFolderName = 'spec';
+export const storeScaffolds = ['actions', 'reducers', 'selectors'];

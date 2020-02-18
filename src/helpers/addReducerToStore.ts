@@ -34,7 +34,7 @@ export const addReducerToStore = (
   rootStoreContent: string,
 ): string => {
   const lowerCaseName = name.toLowerCase();
-  const updatedContent = compose(
+  const updatedContent = compose<string>(
     addImportStatement(lowerCaseName),
     addReducerToCombinedReducersArray(lowerCaseName),
   )(rootStoreContent);

@@ -2,13 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { handlebars } from 'consolidate';
 import mkdirp from 'mkdirp';
-
-const { render } = handlebars;
-
-const generateFileConfig = {
-  testFolderName: 'spec',
-  storeFolderName: 'store',
-};
+import { storeFolderName, testsFolderName, storeScaffolds } from 'config';
 
 const makeDir = (dir: string): void => {
   if (!fs.existsSync(dir)) {
@@ -26,7 +20,28 @@ type GenerateFileProps = {
   targetPath: string;
   templateSrc: string;
   type: string;
-  shouldMoveToStoreFolder?: boolean;
+};
+
+const getFileName = (targetName: string, type: string): string => {
+  let fileName = type === 'index' ? type : `${targetName}.${type}`;
+  if (fileName.includes('functional') || fileName.includes('class')) {
+    fileName = fileName.replace(/.functional/, '').replace(/.class/, '');
+  }
+
+  return fileName;
+};
+
+const getDisiredDirectory = (
+  shouldMoveToStoreFolder: boolean | undefined,
+  type: string,
+  targetDir: string,
+  targetName: string,
+): string => {
+  return shouldMoveToStoreFolder
+    ? `${targetDir}/${storeFolderName}/${type}`
+    : type.includes('test')
+    ? `${targetDir}/${targetName}/${testsFolderName}`
+    : `${targetDir}/${targetName}`;
 };
 
 export const generateFile = async ({
@@ -34,36 +49,34 @@ export const generateFile = async ({
   targetPath,
   templateSrc,
   type,
-  shouldMoveToStoreFolder,
 }: GenerateFileProps): Promise<void> => {
   if (!fs.existsSync(templateSrc)) {
     return;
   }
 
   try {
+    const shouldMoveToStoreFolder = storeScaffolds.some(scaffold =>
+      type.includes(scaffold),
+    );
+
     const targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
 
-    let fileName = type === 'index' ? type : `${targetName}.${type}`;
-    if (fileName.includes('functional') || fileName.includes('class')) {
-      fileName = fileName.replace(/.functional/, '').replace(/.class/, '');
-    }
-
-    let desiredDir;
-    if (shouldMoveToStoreFolder) {
-      desiredDir = `${targetDir}/${generateFileConfig.storeFolderName}/${type}`;
-    } else {
-      desiredDir = `${targetDir}/${targetName}`;
-      if (type.includes('test')) {
-        desiredDir = `${targetDir}/${targetName}/${generateFileConfig.testFolderName}`;
-      }
-    }
+    const fileName = getFileName(targetName, type);
+    const desiredDir = getDisiredDirectory(
+      shouldMoveToStoreFolder,
+      type,
+      targetDir,
+      targetName,
+    );
 
     const file = fs.readFileSync(templateSrc);
     const fileExt = getFileExtension(templateSrc);
-    const res = await render(file.toString(), { name: targetName });
+    const fileContent = await handlebars.render(file.toString(), {
+      name: targetName,
+    });
 
     makeDir(desiredDir);
-    fs.writeFileSync(`${desiredDir}/${fileName}.${fileExt}`, res);
+    fs.writeFileSync(`${desiredDir}/${fileName}.${fileExt}`, fileContent);
 
     console.log(
       `Successfully generated ${desiredDir}/${fileName}.${fileExt} file`,

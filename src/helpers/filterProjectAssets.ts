@@ -1,4 +1,4 @@
-import { CI } from 'config';
+import { CI, ReduxMiddleware, projectFilesToOverride } from 'config';
 
 const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
   gitlab: '.gitlab-ci.yml',
@@ -6,16 +6,33 @@ const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
   bitbucket: 'bitbucket-pipelines.yml',
 };
 
-export const filterProjectAssets = (ci: CI, includeCy: boolean) => (
-  assetPath: string,
-): boolean => {
+const filterCypressFiles = (includeCy: boolean, assetPath: string): boolean =>
+  includeCy ? true : !assetPath.includes('cypress');
+
+const filterCiFiles = (ci: CI, assetPath: string): boolean => {
   const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
     .filter(([key]) => key !== ci)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, files]) => files);
 
-  return (
-    (includeCy ? true : !assetPath.includes('cypress')) &&
-    !ciConfigFilesToRemove.some(file => assetPath.includes(file))
-  );
+  return !ciConfigFilesToRemove.some(file => assetPath.includes(file));
 };
+
+const filterMiddlewareFiles = (
+  middleware: ReduxMiddleware,
+  assetPath: string,
+): boolean =>
+  !assetPath.includes(
+    middleware === 'redux-saga'
+      ? projectFilesToOverride.rootEpic
+      : projectFilesToOverride.rootSaga,
+  );
+
+export const filterProjectAssets = (
+  ci: CI,
+  includeCy: boolean,
+  middleware: ReduxMiddleware,
+) => (assetPath: string): boolean =>
+  filterCypressFiles(includeCy, assetPath) &&
+  filterCiFiles(ci, assetPath) &&
+  filterMiddlewareFiles(middleware, assetPath);
