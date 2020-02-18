@@ -1,7 +1,7 @@
 import { compose, pipe } from 'helpers';
 
-const add10 = (x: number) => x + 10;
-const multipleBy10 = (x: number) => x * 10;
+const add10 = (x: number): number => x + 10;
+const multipleBy10 = (x: number): number => x * 10;
 
 it('should return first function if only one passed', () => {
   const composed = compose(add10);

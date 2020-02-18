@@ -1,6 +1,6 @@
 import handlebars from 'handlebars';
 
-export const setupHandlebars = () => {
+export const setupHandlebars = (): void => {
   handlebars.registerHelper('toLowerCase', str => str.toLowerCase());
   handlebars.registerHelper('toUpperCase', str => str.toUpperCase());
   handlebars.registerHelper(
@@ -8,6 +8,7 @@ export const setupHandlebars = () => {
     str => str.charAt(0).toUpperCase() + str.slice(1),
   );
   handlebars.registerHelper('ifEquals', function(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this: any,
     arg1,
     arg2,

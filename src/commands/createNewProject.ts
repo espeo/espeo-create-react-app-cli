@@ -10,69 +10,13 @@ import {
   ReduxMiddleware,
   PackageManager,
 } from 'config';
-import { getOutputFile, getTemplateFile, filterProjectAssets } from 'helpers';
+import {
+  getOutputFile,
+  getTemplateFile,
+  filterProjectAssets,
+  exec,
+} from 'helpers';
 import { Command } from 'core';
-import { exec } from 'helpers';
-
-const copyAssetsContent = async (
-  includeCypress: boolean,
-  middleware: ReduxMiddleware,
-  ci: CI,
-): Promise<void> => {
-  const projectTemplate = path.join(__dirname, '../../packageTemplate');
-
-  try {
-    console.info('Copying CEA files...');
-
-    await fs.copy(projectTemplate, getOutputFile(''), {
-      filter: filterProjectAssets(ci, includeCypress),
-    });
-
-    if (!includeCypress) {
-      await removeCypressFromPackage();
-      console.info('Cypress dependencies removed!');
-    }
-
-    await setMiddleware(middleware);
-    console.info('Middleware files ready!');
-    console.info('Copying finished!');
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const setMiddleware = async (middleware: ReduxMiddleware): Promise<void> => {
-  try {
-    const packageJson = JSON.parse(
-      fs.readFileSync(getOutputFile('package.json')).toString(),
-    );
-
-    const middleWareDeps = {
-      package:
-        middleware === 'reduxObservable' ? 'redux-observable' : 'redux-saga',
-      file:
-        middleware === 'reduxSaga'
-          ? projectFilesToOverride.rootEpic
-          : projectFilesToOverride.rootSaga,
-    };
-
-    delete packageJson.dependencies[middleWareDeps.package];
-
-    const stdout = await exec(`rm '${getOutputFile(middleWareDeps.file)}'`);
-    console.log(stdout);
-
-    await fillStoreConfig(middleware);
-
-    fs.writeFileSync(
-      getOutputFile('package.json'),
-      JSON.stringify(packageJson, null, 2),
-    );
-  } catch (err) {
-    console.error('Could not set middleware!', err);
-  }
-
-  return;
-};
 
 const removeCypressFromPackage = async (): Promise<void> => {
   try {
@@ -120,8 +64,66 @@ const fillStoreConfig = async (middleware: ReduxMiddleware): Promise<void> => {
     console.info('Successfuly updated store config file: ' + storeConfigSrc);
   } catch (e) {
     console.error(e);
-  } finally {
-    return;
+  }
+};
+
+const setMiddleware = async (middleware: ReduxMiddleware): Promise<void> => {
+  try {
+    const packageJson = JSON.parse(
+      fs.readFileSync(getOutputFile('package.json')).toString(),
+    );
+
+    const middleWareDeps = {
+      package:
+        middleware === 'reduxObservable' ? 'redux-observable' : 'redux-saga',
+      file:
+        middleware === 'reduxSaga'
+          ? projectFilesToOverride.rootEpic
+          : projectFilesToOverride.rootSaga,
+    };
+
+    delete packageJson.dependencies[middleWareDeps.package];
+
+    const stdout = await exec(`rm '${getOutputFile(middleWareDeps.file)}'`);
+    console.log(stdout);
+
+    await fillStoreConfig(middleware);
+
+    fs.writeFileSync(
+      getOutputFile('package.json'),
+      JSON.stringify(packageJson, null, 2),
+    );
+  } catch (err) {
+    console.error('Could not set middleware!', err);
+  }
+
+  return;
+};
+
+const copyAssetsContent = async (
+  includeCypress: boolean,
+  middleware: ReduxMiddleware,
+  ci: CI,
+): Promise<void> => {
+  const projectTemplate = path.join(__dirname, '../../packageTemplate');
+
+  try {
+    console.info('Copying CEA files...');
+
+    await fs.copy(projectTemplate, getOutputFile(''), {
+      filter: filterProjectAssets(ci, includeCypress),
+    });
+
+    if (!includeCypress) {
+      await removeCypressFromPackage();
+      console.info('Cypress dependencies removed!');
+    }
+
+    await setMiddleware(middleware);
+    console.info('Middleware files ready!');
+    console.info('Copying finished!');
+  } catch (err) {
+    console.error(err);
   }
 };
 

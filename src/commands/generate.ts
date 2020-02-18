@@ -7,35 +7,6 @@ import fs from 'fs';
 
 //TODO: use prettier with config from packageTemplate to format all things we generate
 
-export type GenerateCommandOptionType = 'store' | 'component';
-
-type GenerateCommandOptions = {
-  name: string;
-  type: GenerateCommandOptionType;
-  shouldBeFunctionalComponent: boolean;
-};
-
-export const generate: Command<GenerateCommandOptions> = async ({
-  name,
-  type,
-  shouldBeFunctionalComponent,
-}) => {
-  if (type !== 'store' && type !== 'component')
-    throw new UnexpectedCommandArgumentError('type');
-
-  const targetName = path.basename(name);
-  const targetPath = path.dirname(name);
-
-  if (type === 'store') return generateStore(targetName, targetPath);
-
-  return generateComponent(
-    type,
-    shouldBeFunctionalComponent,
-    targetName,
-    targetPath,
-  );
-};
-
 const generateStore = async (
   targetName: string,
   targetPath: string,
@@ -72,11 +43,7 @@ const generateStore = async (
   const rootStoreContent = fs.readFileSync(rootStoreFilePath, 'utf-8');
   const updatedContent = addReducerToStore(targetName, rootStoreContent);
 
-  try {
-    fs.writeFileSync(rootStoreFilePath, updatedContent);
-  } catch (err) {
-    throw err;
-  }
+  fs.writeFileSync(rootStoreFilePath, updatedContent);
 };
 
 const generateComponent = async (
@@ -84,7 +51,7 @@ const generateComponent = async (
   shouldBeFunctionalComponent: boolean,
   targetName: string,
   targetPath: string,
-) => {
+): Promise<void> => {
   const componentType = `${type}.${
     shouldBeFunctionalComponent ? 'functional' : 'class'
   }`;
@@ -103,4 +70,33 @@ const generateComponent = async (
       type: componentType,
     }),
   ]);
+};
+
+export type GenerateCommandOptionType = 'store' | 'component';
+
+type GenerateCommandOptions = {
+  name: string;
+  type: GenerateCommandOptionType;
+  shouldBeFunctionalComponent: boolean;
+};
+
+export const generate: Command<GenerateCommandOptions> = async ({
+  name,
+  type,
+  shouldBeFunctionalComponent,
+}) => {
+  if (type !== 'store' && type !== 'component')
+    throw new UnexpectedCommandArgumentError('type');
+
+  const targetName = path.basename(name);
+  const targetPath = path.dirname(name);
+
+  if (type === 'store') return generateStore(targetName, targetPath);
+
+  return generateComponent(
+    type,
+    shouldBeFunctionalComponent,
+    targetName,
+    targetPath,
+  );
 };

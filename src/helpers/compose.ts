@@ -1,5 +1,5 @@
-export const compose = (...fns: Function[]) => (x: any) =>
+export const compose = <T>(...fns: Function[]) => (x: T): T =>
   fns.reduceRight((v, f) => f(v), x);
 
-export const pipe = (...fns: Function[]) => (x: any) =>
+export const pipe = <T>(...fns: Function[]) => (x: T): T =>
   fns.reduce((v, f) => f(v), x);

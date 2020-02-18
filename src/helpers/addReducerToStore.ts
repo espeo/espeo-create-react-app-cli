@@ -1,6 +1,8 @@
 import { compose } from 'helpers';
 
-const addImportStatement = (reducerName: string) => (rootReducer: string) => {
+const addImportStatement = (reducerName: string) => (
+  rootReducer: string,
+): string => {
   const upperCaseName =
     reducerName.charAt(0).toUpperCase() + reducerName.slice(1);
 
@@ -12,7 +14,7 @@ const addImportStatement = (reducerName: string) => (rootReducer: string) => {
 
 const addReducerToCombinedReducersArray = (reducerName: string) => (
   rootReducer: string,
-) => {
+): string => {
   const combineReducersContentMatch = /\({([^}]+)\}/;
   const upperCaseName =
     reducerName.charAt(0).toUpperCase() + reducerName.slice(1);

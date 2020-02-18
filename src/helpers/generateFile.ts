@@ -40,16 +40,9 @@ export const generateFile = async ({
     return;
   }
 
-  const file = fs.readFileSync(templateSrc);
-  const fileExt = getFileExtension(templateSrc);
-  let targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
-  const renderFile = () => render(file.toString(), { name: targetName });
-
-  const res = await renderFile().catch(err => {
-    throw err;
-  });
-
   try {
+    const targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
+
     let fileName = type === 'index' ? type : `${targetName}.${type}`;
     if (fileName.includes('functional') || fileName.includes('class')) {
       fileName = fileName.replace(/.functional/, '').replace(/.class/, '');
@@ -64,6 +57,10 @@ export const generateFile = async ({
         desiredDir = `${targetDir}/${targetName}/${generateFileConfig.testFolderName}`;
       }
     }
+
+    const file = fs.readFileSync(templateSrc);
+    const fileExt = getFileExtension(templateSrc);
+    const res = await render(file.toString(), { name: targetName });
 
     makeDir(desiredDir);
     fs.writeFileSync(`${desiredDir}/${fileName}.${fileExt}`, res);

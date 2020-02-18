@@ -8,9 +8,10 @@ const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
 
 export const filterProjectAssets = (ci: CI, includeCy: boolean) => (
   assetPath: string,
-) => {
+): boolean => {
   const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
     .filter(([key]) => key !== ci)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, files]) => files);
 
   return (
