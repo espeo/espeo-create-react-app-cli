@@ -7,10 +7,16 @@ export const setupHandlebars = () => {
     'capitalize',
     str => str.charAt(0).toUpperCase() + str.slice(1),
   );
-  handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+  handlebars.registerHelper('ifEquals', function(
+    this: any,
+    arg1,
+    arg2,
+    options,
+  ) {
     return arg1 == arg2 ? options.fn(this) : options.inverse(this);
-  });
-  handlebars.registerHelper('setVar', function(varName, varValue, options) {
-    options.data.root[varName] = varValue;
-  });
+  }),
+    handlebars.registerHelper(
+      'setVar',
+      (varName, varValue, options) => (options.data.root[varName] = varValue),
+    );
 };

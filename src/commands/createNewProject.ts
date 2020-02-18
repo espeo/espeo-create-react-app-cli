@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
-import exec from 'await-exec';
 import { handlebars } from 'consolidate';
 import {
   projectFilesToOverride,
@@ -11,8 +10,9 @@ import {
   ReduxMiddleware,
   PackageManager,
 } from 'config';
-import { getOutputFile, getTemplateFile } from 'helpers';
+import { getOutputFile, getTemplateFile, filterProjectAssets } from 'helpers';
 import { Command } from 'core';
+import { exec } from 'helpers';
 
 const copyAssetsContent = async (
   includeCypress: boolean,
@@ -21,23 +21,11 @@ const copyAssetsContent = async (
 ): Promise<void> => {
   const projectTemplate = path.join(__dirname, '../../packageTemplate');
 
-  const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
-    gitlab: '.gitlab-ci.yml',
-    circle: '.circleci',
-    bitbucket: 'bitbucket-pipelines.yml',
-  };
-
   try {
     console.info('Copying CEA files...');
 
-    const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
-      .filter(([key]) => key !== ci)
-      .map(([_, files]) => files);
-
     await fs.copy(projectTemplate, getOutputFile(''), {
-      filter: path =>
-        (includeCypress ? true : !path.includes('cypress')) &&
-        !ciConfigFilesToRemove.some(file => path.includes(file)),
+      filter: filterProjectAssets(ci, includeCypress),
     });
 
     if (!includeCypress) {
@@ -70,14 +58,8 @@ const setMiddleware = async (middleware: ReduxMiddleware): Promise<void> => {
 
     delete packageJson.dependencies[middleWareDeps.package];
 
-    await exec(
-      `
-      rm '${getOutputFile(middleWareDeps.file)}'
-    `,
-      (err, stdout) => {
-        console.log(stdout);
-      },
-    );
+    const stdout = await exec(`rm '${getOutputFile(middleWareDeps.file)}'`);
+    console.log(stdout);
 
     await fillStoreConfig(middleware);
 
@@ -143,16 +125,8 @@ const fillStoreConfig = async (middleware: ReduxMiddleware): Promise<void> => {
   }
 };
 
-const installDependencies = (packageManager: PackageManager): Promise<void> => {
-  return exec(
-    `cd ${program.args[0]} && ${packageManager.toLowerCase()} install`,
-    (err, stdout) => {
-      console.log(stdout);
-
-      console.info('Setup finished!');
-    },
-  );
-};
+const installDependencies = (packageManager: PackageManager): Promise<string> =>
+  exec(`cd ${program.args[0]} && ${packageManager.toLowerCase()} install`);
 
 export const createNewProject: Command<Answers> = async ({
   includeCypress,
