@@ -54,7 +54,7 @@ const copyAssets = async (
 ): Promise<void> => {
   console.info('Copying CEA files...');
 
-  const projectTemplate = path.join(__dirname, '../../packageTemplate');
+  const projectTemplate = path.join(__dirname, '../packageTemplate');
 
   await fs.copy(projectTemplate, getOutputFile(''), {
     filter: filterProjectAssets(ci, includeCypress, middleware),

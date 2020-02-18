@@ -6,11 +6,9 @@ module.exports = () => ({
   target: 'node',
   mode: 'production',
   context: __dirname,
-  entry: {
-    app: './src/index.ts',
-  },
+  entry: path.resolve(__dirname, 'src/index.ts'),
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.join(__dirname, 'dist'),
     filename: 'index.js',
   },
   resolve: {
@@ -27,6 +25,6 @@ module.exports = () => ({
   },
   externals: [nodeExternals()],
   node: {
-    __dirname: true,
+    __dirname: false,
   },
 });
