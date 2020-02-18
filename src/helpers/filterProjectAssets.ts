@@ -23,7 +23,7 @@ const filterMiddlewareFiles = (
   assetPath: string,
 ): boolean =>
   !assetPath.includes(
-    middleware === 'redux-saga'
+    middleware === 'reduxSaga'
       ? projectFilesToOverride.rootEpic
       : projectFilesToOverride.rootSaga,
   );

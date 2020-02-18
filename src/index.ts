@@ -33,12 +33,10 @@ program
   .action(() => inquirer.prompt(questions).then(createNewProject));
 
 program.on('command:*', () => {
-  console.log(
-    console.error(
-      'Invalid command \nSee --help for a list of available commands.',
-    ),
-  );
-  process.exit(1);
+  console.error(
+    'Invalid command \nSee --help for a list of available commands.',
+  ),
+    process.exit(1);
 });
 
 if (process.argv.length > 6) {
@@ -53,4 +51,5 @@ try {
 } catch (err) {
   const { message } = err as program.CommanderError;
   console.error(message);
+  process.exit(1);
 }

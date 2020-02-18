@@ -9,6 +9,7 @@ import {
   CI,
   ReduxMiddleware,
   PackageManager,
+  supportedReduxMiddlewares,
 } from 'config';
 import {
   getOutputFile,
@@ -18,7 +19,9 @@ import {
 } from 'helpers';
 import { Command } from 'core';
 
-const updateStoreConfig = (middleware: ReduxMiddleware): void => {
+const updateStoreConfig = async (
+  middleware: ReduxMiddleware,
+): Promise<void> => {
   console.log('Updating store...');
 
   const storeConfigSrc = getOutputFile(projectFilesToOverride.storeConfig);
@@ -31,9 +34,13 @@ const updateStoreConfig = (middleware: ReduxMiddleware): void => {
     return;
   }
 
-  const storeContent = handlebars.render(storeConfigTemplateFile.toString(), {
-    middleware,
-  });
+  const storeContent = await handlebars.render(
+    storeConfigTemplateFile.toString(),
+    {
+      middleware,
+      supportedReduxMiddlewares,
+    },
+  );
 
   fs.writeFileSync(storeConfigSrc, storeContent);
 
@@ -77,7 +84,7 @@ const updatePackageJson = (
   }
 
   delete packageJson.dependencies[
-    middleware === 'redux-saga' ? 'redux-observable' : 'redux-saga'
+    middleware === 'reduxSaga' ? 'redux-observable' : 'redux-saga'
   ];
 
   fs.writeFileSync(
@@ -112,7 +119,7 @@ export const createNewProject: Command<Answers> = async ({
   try {
     await copyAssets(includeCypress, middleware, ci);
     updatePackageJson(includeCypress, middleware);
-    updateStoreConfig(middleware);
+    await updateStoreConfig(middleware);
     await installDependencies(packageManager);
   } catch (e) {
     console.log(e);
