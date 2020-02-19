@@ -1,9 +1,19 @@
-import { CI, ReduxMiddleware, projectFilesToOverride } from 'config';
+import {
+  CI,
+  ReduxMiddleware,
+  projectFilesToOverride,
+  PackageManager,
+} from 'config';
 
 const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
   gitlab: '.gitlab-ci.yml',
   circle: '.circleci',
   bitbucket: 'bitbucket-pipelines.yml',
+};
+
+const lockFilePerPackageManager: Record<PackageManager, string> = {
+  npm: 'package-lock.json',
+  yarn: 'yarn.lock',
 };
 
 const filterCypressFiles = (includeCy: boolean, assetPath: string): boolean =>
@@ -12,7 +22,6 @@ const filterCypressFiles = (includeCy: boolean, assetPath: string): boolean =>
 const filterCiFiles = (ci: CI, assetPath: string): boolean => {
   const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
     .filter(([key]) => key !== ci)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, files]) => files);
 
   return !ciConfigFilesToRemove.some(file => assetPath.includes(file));
@@ -23,16 +32,26 @@ const filterMiddlewareFiles = (
   assetPath: string,
 ): boolean =>
   !assetPath.includes(
-    middleware === 'reduxSaga'
+    middleware === 'redux-saga'
       ? projectFilesToOverride.rootEpic
       : projectFilesToOverride.rootSaga,
   );
 
+const filterLockFiles = (
+  packageManager: PackageManager,
+  assetPath: string,
+): boolean =>
+  !assetPath.includes(
+    lockFilePerPackageManager[packageManager === 'npm' ? 'yarn' : 'npm'],
+  );
+
 export const filterProjectAssets = (
   ci: CI,
-  includeCy: boolean,
+  includeCypress: boolean,
   middleware: ReduxMiddleware,
+  packageManager: PackageManager,
 ) => (assetPath: string): boolean =>
-  filterCypressFiles(includeCy, assetPath) &&
+  filterCypressFiles(includeCypress, assetPath) &&
   filterCiFiles(ci, assetPath) &&
-  filterMiddlewareFiles(middleware, assetPath);
+  filterMiddlewareFiles(middleware, assetPath) &&
+  filterLockFiles(packageManager, assetPath);

@@ -1,8 +1,8 @@
 import { QuestionCollection } from 'inquirer';
 
-export type ReduxMiddleware = 'reduxSaga' | 'reduxObservable';
+export type ReduxMiddleware = 'redux-saga' | 'redux-observable';
 
-export const supportedReduxMiddlewares: Record<ReduxMiddleware, string> = {
+export const supportedReduxMiddlewares: Record<string, ReduxMiddleware> = {
   reduxObservable: 'redux-observable',
   reduxSaga: 'redux-saga',
 };

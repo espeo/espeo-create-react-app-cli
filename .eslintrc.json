@@ -16,7 +16,16 @@
   },
   "rules": {
     "import/no-default-export": "error",
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "@typescript-eslint/camelcase": ["error", { "allow": ["_?"] }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "_",
+        "argsIgnorePattern": "_",
+        "ignoreRestSiblings": true
+      }
+    ]
   },
   "ignorePatterns": ["node_modules/"]
 }
