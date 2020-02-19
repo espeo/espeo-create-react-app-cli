@@ -125,7 +125,7 @@ export const createNewProject: Command<Answers> = async ({
     await copyAssets(includeCypress, middleware, ci, packageManager);
     updatePackageJson(includeCypress, middleware);
     await updateStoreConfig(middleware);
-    // await installDependencies(packageManager);
+    await installDependencies(packageManager);
   } catch (e) {
     console.log(e);
   }
