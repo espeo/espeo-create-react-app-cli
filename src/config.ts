@@ -54,3 +54,9 @@ export const templatesFolderName = 'templates';
 export const storeFolderName = 'store';
 export const testsFolderName = 'spec';
 export const storeScaffolds = ['actions', 'reducers', 'selectors'];
+
+export const ciConfigPathPerCi: Record<Exclude<CI, 'none'>, string> = {
+  gitlab: '.gitlab-ci.yml',
+  circle: '.circleci/config.yml',
+  bitbucket: 'bitbucket-pipelines.yml',
+};

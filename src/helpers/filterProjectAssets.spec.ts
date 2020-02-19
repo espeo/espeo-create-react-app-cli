@@ -7,7 +7,7 @@ const filesPaths = [
   'src/app/store/rootEpic.ts',
   'src/app/store/rootSaga.ts',
   '.gitlab-ci.yml',
-  '.circleci',
+  '.circleci/config.yml',
   'bitbucket-pipelines.yml',
   'otherFile.js',
   'package-lock.json',
@@ -19,7 +19,7 @@ it('should remove cypress files', () => {
     filterProjectAssets(
       'bitbucket',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -37,7 +37,7 @@ it('should include cypress files', () => {
     filterProjectAssets(
       'bitbucket',
       true,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -57,7 +57,7 @@ it('should remove all CI files', () => {
     filterProjectAssets(
       'none',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -74,7 +74,7 @@ it('should remove all but gitlab CI files', () => {
     filterProjectAssets(
       'gitlab',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -92,7 +92,7 @@ it('should remove rootSaga', () => {
     filterProjectAssets(
       'none',
       false,
-      'reduxObservable' as ReduxMiddleware,
+      'redux-observable' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -109,7 +109,7 @@ it('should remove rootEpic', () => {
     filterProjectAssets(
       'none',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -126,7 +126,7 @@ it('should remove npm lock file', () => {
     filterProjectAssets(
       'none',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'yarn' as PackageManager,
     ),
   );
@@ -143,7 +143,7 @@ it('should remove yarn lock file', () => {
     filterProjectAssets(
       'none',
       false,
-      'reduxSaga' as ReduxMiddleware,
+      'redux-saga' as ReduxMiddleware,
       'npm' as PackageManager,
     ),
   );
