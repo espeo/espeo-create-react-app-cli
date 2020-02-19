@@ -16,6 +16,12 @@ import {
   getTemplateFile,
   filterProjectAssets,
   exec,
+  removeDependency,
+  removeDevDependency,
+  removeScript,
+  compose,
+  PackageJson,
+  Identity,
 } from 'helpers';
 import { Command } from 'core';
 
@@ -51,13 +57,14 @@ const copyAssets = async (
   includeCypress: boolean,
   middleware: ReduxMiddleware,
   ci: CI,
+  packageManager: PackageManager,
 ): Promise<void> => {
   console.info('Copying CEA files...');
 
   const projectTemplate = path.join(__dirname, '../packageTemplate');
 
   await fs.copy(projectTemplate, getOutputFile(''), {
-    filter: filterProjectAssets(ci, includeCypress, middleware),
+    filter: filterProjectAssets(ci, includeCypress, middleware, packageManager),
   });
 
   console.info('Copying finished!');
@@ -73,23 +80,21 @@ const updatePackageJson = (
     fs.readFileSync(getOutputFile('package.json')).toString(),
   );
 
-  if (!includeCypress) {
-    const scripts = ['cy:ci', 'cy:open', 'cy:run'];
+  const removeCypress = compose(
+    removeDevDependency('cypress'),
+    ...['cy:ci', 'cy:open', 'cy:run'].map(removeScript),
+  );
 
-    for (const script of scripts) {
-      delete packageJson.scripts[script];
-    }
-
-    delete packageJson.devDependencies['cypress'];
-  }
-
-  delete packageJson.dependencies[
-    middleware === 'reduxSaga' ? 'redux-observable' : 'redux-saga'
-  ];
+  const updatedPackageJson = compose<PackageJson>(
+    removeDependency(
+      middleware === 'redux-saga' ? 'redux-observable' : 'redux-saga',
+    ),
+    !includeCypress ? removeCypress : Identity,
+  )(packageJson);
 
   fs.writeFileSync(
     getOutputFile('package.json'),
-    JSON.stringify(packageJson, null, 2),
+    JSON.stringify(updatedPackageJson, null, 2),
   );
 
   console.info('package.json updated!');
@@ -117,10 +122,10 @@ export const createNewProject: Command<Answers> = async ({
   ci,
 }) => {
   try {
-    await copyAssets(includeCypress, middleware, ci);
+    await copyAssets(includeCypress, middleware, ci, packageManager);
     updatePackageJson(includeCypress, middleware);
     await updateStoreConfig(middleware);
-    await installDependencies(packageManager);
+    // await installDependencies(packageManager);
   } catch (e) {
     console.log(e);
   }
