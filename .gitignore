@@ -3,4 +3,5 @@ node_modules
 package-lock.json
 /dist
 yarn-error.log
-templates/projectTemplate
+templates/packageTemplate
+/.vscode
