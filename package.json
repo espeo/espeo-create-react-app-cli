@@ -15,13 +15,14 @@
     "espeo"
   ],
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "yarn build",
     "precommit": "lint-staged",
-    "build": "npm run clean & webpack",
+    "build": "yarn clean & webpack",
     "watch": "webpack --watch",
     "clean": "rm -rf dist",
     "test": "jest --passWithNoTests",
-    "lint": "eslint ./src --ext .ts"
+    "lint": "eslint ./src --ext .ts",
+    "audit": "yarn audit"
   },
   "author": "Espeo Software",
   "license": "MIT",
@@ -70,5 +71,8 @@
     "webpack": "4.41.6",
     "webpack-cli": "3.3.11",
     "webpack-node-externals": "1.7.2"
+  },
+  "engines": {
+    "yarn": ">=1.16.0"
   }
 }
