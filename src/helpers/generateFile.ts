@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { handlebars } from 'consolidate';
 import mkdirp from 'mkdirp';
-import { storeFolderName, testsFolderName, storeScaffolds } from 'config';
+import { storeScaffolds } from 'config';
 
 const makeDir = (dir: string): void => {
   if (!fs.existsSync(dir)) {
@@ -38,9 +38,9 @@ const getDisiredDirectory = (
   targetName: string,
 ): string => {
   return shouldMoveToStoreFolder
-    ? `${targetDir}/${storeFolderName}/${type}`
+    ? `${targetDir}/'store'/${type}`
     : type.includes('test')
-    ? `${targetDir}/${targetName}/${testsFolderName}`
+    ? `${targetDir}/${targetName}/spec`
     : `${targetDir}/${targetName}`;
 };
 

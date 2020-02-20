@@ -6,6 +6,7 @@ import {
   updateCiFiles,
   updateStoreConfig,
   installDependencies,
+  cloneProjectTemplate,
 } from 'services';
 
 export const createNewProject: Command<Answers> = async ({
@@ -15,6 +16,7 @@ export const createNewProject: Command<Answers> = async ({
   ci,
 }) => {
   try {
+    await cloneProjectTemplate();
     await copyAssets(includeCypress, middleware, ci, packageManager);
     updatePackageJson(includeCypress, middleware);
     await updateStoreConfig(middleware);
