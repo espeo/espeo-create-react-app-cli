@@ -15,6 +15,7 @@
     "espeo"
   ],
   "scripts": {
+    "postversion": "git push --follow-tags",
     "prepare": "yarn build",
     "precommit": "lint-staged",
     "build": "yarn clean & webpack",

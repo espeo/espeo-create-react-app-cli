@@ -64,3 +64,13 @@ Examples:
   espeo g store /src/exampleStore
   espeo g store ./src/exampleStore
   ```
+
+## Developer Guide
+
+To deploy new version just use:
+
+```
+yarn version <newversion>
+```
+
+This will update package version and push your code with `--follow-tags` option.

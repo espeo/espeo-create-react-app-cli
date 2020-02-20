@@ -1,9 +1,13 @@
 version: 2.1
+
+defaults: &defaults
+  working_directory: ~/project
+  docker:
+    - image: circleci/node:10.16.3
+
 jobs:
-  build:
-    working_directory: ~/src
-    docker:
-      - image: circleci/node:10.16.3
+  test:
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -13,10 +17,6 @@ jobs:
       - run:
           name: Install dependencies
           command: yarn install --ignore-scripts
-      - save_cache:
-          paths:
-            - node_modules
-          key: dependencies-{{ checksum "package.json" }}
       - run:
           name: Audit vulnerabilities
           command: yarn audit
@@ -26,3 +26,35 @@ jobs:
       - run:
           name: Unit tests
           command: yarn test
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/project/.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
+
+workflows:
+  version: 2.1
+  test-deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
