@@ -3,13 +3,8 @@ import {
   ReduxMiddleware,
   projectFilesToOverride,
   PackageManager,
+  ciConfigPathPerCi,
 } from 'config';
-
-const ciConfigPathPerSupportedCi: Record<Exclude<CI, 'none'>, string> = {
-  gitlab: '.gitlab-ci.yml',
-  circle: '.circleci',
-  bitbucket: 'bitbucket-pipelines.yml',
-};
 
 const lockFilePerPackageManager: Record<PackageManager, string> = {
   npm: 'package-lock.json',
@@ -20,9 +15,9 @@ const filterCypressFiles = (includeCy: boolean, assetPath: string): boolean =>
   includeCy ? true : !assetPath.includes('cypress');
 
 const filterCiFiles = (ci: CI, assetPath: string): boolean => {
-  const ciConfigFilesToRemove = Object.entries(ciConfigPathPerSupportedCi)
+  const ciConfigFilesToRemove = Object.entries(ciConfigPathPerCi)
     .filter(([key]) => key !== ci)
-    .map(([_, files]) => files);
+    .map(([_, file]) => file.split('/')[0]);
 
   return !ciConfigFilesToRemove.some(file => assetPath.includes(file));
 };
