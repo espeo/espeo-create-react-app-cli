@@ -17,7 +17,7 @@ const filterCypressFiles = (includeCy: boolean, assetPath: string): boolean =>
 const filterCiFiles = (ci: CI, assetPath: string): boolean => {
   const ciConfigFilesToRemove = Object.entries(ciConfigPathPerCi)
     .filter(([key]) => key !== ci)
-    .map(([_, files]) => files);
+    .map(([_, file]) => file.split('/')[0]);
 
   return !ciConfigFilesToRemove.some(file => assetPath.includes(file));
 };

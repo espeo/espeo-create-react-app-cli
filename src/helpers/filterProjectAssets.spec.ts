@@ -7,6 +7,7 @@ const filesPaths = [
   'src/app/store/rootEpic.ts',
   'src/app/store/rootSaga.ts',
   '.gitlab-ci.yml',
+  '.circleci',
   '.circleci/config.yml',
   'bitbucket-pipelines.yml',
   'otherFile.js',
@@ -82,6 +83,43 @@ it('should remove all but gitlab CI files', () => {
   expect(outputFiles).toEqual([
     'src/app/store/rootSaga.ts',
     '.gitlab-ci.yml',
+    'otherFile.js',
+    'yarn.lock',
+  ]);
+});
+
+it('should remove all but bitbucket CI files', () => {
+  const outputFiles = filesPaths.filter(
+    filterProjectAssets(
+      'bitbucket',
+      false,
+      'redux-saga' as ReduxMiddleware,
+      'yarn' as PackageManager,
+    ),
+  );
+
+  expect(outputFiles).toEqual([
+    'src/app/store/rootSaga.ts',
+    'bitbucket-pipelines.yml',
+    'otherFile.js',
+    'yarn.lock',
+  ]);
+});
+
+it('should remove all but cicle CI files', () => {
+  const outputFiles = filesPaths.filter(
+    filterProjectAssets(
+      'circle',
+      false,
+      'redux-saga' as ReduxMiddleware,
+      'yarn' as PackageManager,
+    ),
+  );
+
+  expect(outputFiles).toEqual([
+    'src/app/store/rootSaga.ts',
+    '.circleci',
+    '.circleci/config.yml',
     'otherFile.js',
     'yarn.lock',
   ]);
