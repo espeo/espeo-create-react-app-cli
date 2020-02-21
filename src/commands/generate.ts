@@ -2,19 +2,21 @@ import path from 'path';
 import { UnexpectedCommandArgumentError } from 'errors';
 import { Command } from 'core';
 import { generateComponent, generateStore } from 'services';
+import { withOutdatedCheck } from 'decorators';
+import { compose } from 'helpers';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
 type GenerateCommandOptions = {
   name: string;
   type: GenerateCommandOptionType;
-  shouldBeFunctionalComponent: boolean;
+  functional: boolean;
 };
 
-export const generate: Command<GenerateCommandOptions> = async ({
+const execute: Command<GenerateCommandOptions> = async ({
   name,
   type,
-  shouldBeFunctionalComponent,
+  functional,
 }) => {
   if (type !== 'store' && type !== 'component')
     throw new UnexpectedCommandArgumentError('type');
@@ -24,10 +26,9 @@ export const generate: Command<GenerateCommandOptions> = async ({
 
   if (type === 'store') return generateStore(targetName, targetPath);
 
-  return generateComponent(
-    type,
-    shouldBeFunctionalComponent,
-    targetName,
-    targetPath,
-  );
+  return generateComponent(type, functional, targetName, targetPath);
 };
+
+export const generate = compose<Command<GenerateCommandOptions>>(
+  withOutdatedCheck,
+)(execute);
