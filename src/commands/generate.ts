@@ -33,6 +33,4 @@ const execute: Command<GenerateCommandOptions> = async ({
   }
 };
 
-export const generate = compose<Command<GenerateCommandOptions>>(
-  withOutdatedCheck,
-)(execute);
+export const generate = compose(withOutdatedCheck)(execute);

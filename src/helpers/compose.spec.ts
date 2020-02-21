@@ -1,4 +1,4 @@
-import { compose, pipe } from 'helpers';
+import { compose } from 'helpers';
 
 const add10 = (x: number): number => x + 10;
 const multipleBy10 = (x: number): number => x * 10;
@@ -11,9 +11,4 @@ it('should return first function if only one passed', () => {
 it('should compose functions', () => {
   const composed = compose(multipleBy10, add10);
   expect(composed(10)).toEqual(200);
-});
-
-it('should pipe functions', () => {
-  const composed = pipe(multipleBy10, add10);
-  expect(composed(10)).toEqual(110);
 });

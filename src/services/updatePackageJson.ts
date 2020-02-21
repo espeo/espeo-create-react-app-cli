@@ -6,7 +6,6 @@ import {
   removeDevDependency,
   removeScript,
   compose,
-  PackageJson,
   Identity,
 } from 'helpers';
 
@@ -25,7 +24,7 @@ export const updatePackageJson = (
     ...['cy:ci', 'cy:open', 'cy:run'].map(removeScript),
   );
 
-  const updatedPackageJson = compose<PackageJson>(
+  const updatedPackageJson = compose(
     removeDependency(
       middleware === 'redux-saga' ? 'redux-observable' : 'redux-saga',
     ),

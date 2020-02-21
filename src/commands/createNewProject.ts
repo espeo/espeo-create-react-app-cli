@@ -72,6 +72,4 @@ const execute: Command<CreateNewProjectCommandOptions> = async ({
   }
 };
 
-export const createNewProject = compose<
-  Command<CreateNewProjectCommandOptions>
->(withOutdatedCheck)(execute);
+export const createNewProject = compose(withOutdatedCheck)(execute);
