@@ -18,15 +18,19 @@ const execute: Command<GenerateCommandOptions> = async ({
   type,
   functional,
 }) => {
-  if (type !== 'store' && type !== 'component')
-    throw new UnexpectedCommandArgumentError('type');
+  try {
+    if (type !== 'store' && type !== 'component')
+      throw new UnexpectedCommandArgumentError('type');
 
-  const targetName = path.basename(name);
-  const targetPath = path.dirname(name);
+    const targetName = path.basename(name);
+    const targetPath = path.dirname(name);
 
-  if (type === 'store') return generateStore(targetName, targetPath);
+    if (type === 'store') return generateStore(targetName, targetPath);
 
-  return generateComponent(type, functional, targetName, targetPath);
+    return generateComponent(type, functional, targetName, targetPath);
+  } catch (e) {
+    console.error(e.message);
+  }
 };
 
 export const generate = compose<Command<GenerateCommandOptions>>(
