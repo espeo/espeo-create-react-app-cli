@@ -30,7 +30,6 @@ const filterMiddlewareFiles = (
     ? [projectFilesToOverride.rootEpic, projectFilesToOverride.epics]
     : [projectFilesToOverride.rootSaga, projectFilesToOverride.sagas]
   ).some(path => assetPath.includes(path));
-//
 
 const filterLockFiles = (
   packageManager: PackageManager,
