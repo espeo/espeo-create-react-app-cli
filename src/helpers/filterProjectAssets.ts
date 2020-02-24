@@ -26,11 +26,10 @@ const filterMiddlewareFiles = (
   middleware: ReduxMiddleware,
   assetPath: string,
 ): boolean =>
-  !assetPath.includes(
-    middleware === 'redux-saga'
-      ? projectFilesToOverride.rootEpic
-      : projectFilesToOverride.rootSaga,
-  );
+  !(middleware === 'redux-saga'
+    ? [projectFilesToOverride.rootEpic, projectFilesToOverride.epics]
+    : [projectFilesToOverride.rootSaga, projectFilesToOverride.sagas]
+  ).some(path => assetPath.includes(path));
 
 const filterLockFiles = (
   packageManager: PackageManager,
