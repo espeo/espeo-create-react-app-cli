@@ -1,5 +1,6 @@
-import { generateFile, getTemplateFile } from 'helpers';
+import { generateFile, getTemplatesDirectory } from 'helpers';
 import { GenerateCommandOptionType } from 'commands';
+import path from 'path';
 
 export const generateComponent = async (
   type: GenerateCommandOptionType,
@@ -15,13 +16,13 @@ export const generateComponent = async (
     generateFile({
       targetName,
       targetPath,
-      templateSrc: getTemplateFile(`${type}.test.tsx`),
+      templateSrc: path.join(getTemplatesDirectory(), `${type}.test.tsx`),
       type: 'test',
     }),
     generateFile({
       targetName,
       targetPath,
-      templateSrc: getTemplateFile(`${componentType}.tsx`),
+      templateSrc: path.join(getTemplatesDirectory(), `${componentType}.tsx`),
       type: componentType,
     }),
   ]);

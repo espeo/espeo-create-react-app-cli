@@ -5,3 +5,4 @@ export * from 'services/updateStoreConfig';
 export * from 'services/installDependencies';
 export * from 'services/gererateComponent';
 export * from 'services/generateStore';
+export * from 'services/cloneProjectTemplate';

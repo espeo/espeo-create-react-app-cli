@@ -1,7 +1,12 @@
-import { generateFile, getTemplateFile, addReducerToStore } from 'helpers';
+import {
+  generateFile,
+  addReducerToStore,
+  getTemplatesDirectory,
+} from 'helpers';
 import findUp from 'find-up';
 import fs from 'fs';
 import { storeScaffolds } from 'config';
+import path from 'path';
 
 export const generateStore = async (
   targetName: string,
@@ -13,13 +18,19 @@ export const generateStore = async (
         generateFile({
           targetName,
           targetPath,
-          templateSrc: getTemplateFile(`store/${scaffold}/${scaffold}.test.ts`),
+          templateSrc: path.join(
+            getTemplatesDirectory(),
+            `store/${scaffold}/${scaffold}.test.ts`,
+          ),
           type: scaffold + '.test',
         }),
         generateFile({
           targetName,
           targetPath,
-          templateSrc: getTemplateFile(`store/${scaffold}/index.ts`),
+          templateSrc: path.join(
+            getTemplatesDirectory(),
+            `store/${scaffold}/index.ts`,
+          ),
           type: scaffold,
         }),
       ]),
