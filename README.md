@@ -70,7 +70,7 @@ Examples:
 To deploy new version just use:
 
 ```
-yarn version <newversion>
+yarn version
 ```
 
 This will update package version and push your code with `--follow-tags` option.
