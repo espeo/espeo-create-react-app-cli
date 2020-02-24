@@ -15,9 +15,9 @@ export const projectFilesToOverride = {
   storeConfig: 'src/app/store/index.ts',
 };
 
-export const templatesFolderName = 'templates';
-export const storeFolderName = 'store';
-export const testsFolderName = 'spec';
+export const projectTemplateRepositoryUrl =
+  'https://github.com/espeo/espeo-create-react-app.git';
+
 export const storeScaffolds = ['actions', 'reducers', 'selectors'];
 
 export const ciConfigPathPerCi: Record<Exclude<CI, 'none'>, string> = {

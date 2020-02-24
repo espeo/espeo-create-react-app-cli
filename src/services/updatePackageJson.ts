@@ -1,13 +1,14 @@
 import fs from 'fs-extra';
 import { ReduxMiddleware } from 'config';
 import {
-  getOutputFile,
   removeDependency,
   removeDevDependency,
   removeScript,
   compose,
   Identity,
+  getOutputDirectory,
 } from 'helpers';
+import path from 'path';
 
 export const updatePackageJson = (
   includeCypress: boolean,
@@ -15,9 +16,8 @@ export const updatePackageJson = (
 ): void => {
   console.info('Updating package.json...');
 
-  const packageJson = JSON.parse(
-    fs.readFileSync(getOutputFile('package.json')).toString(),
-  );
+  const packageJsonDir = path.join(getOutputDirectory(), 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonDir).toString());
 
   const removeCypress = compose(
     removeDevDependency('cypress'),
@@ -31,10 +31,7 @@ export const updatePackageJson = (
     !includeCypress ? removeCypress : Identity,
   )(packageJson);
 
-  fs.writeFileSync(
-    getOutputFile('package.json'),
-    JSON.stringify(updatedPackageJson, null, 2),
-  );
+  fs.writeFileSync(packageJsonDir, JSON.stringify(updatedPackageJson, null, 2));
 
   console.info('package.json updated!');
 };

@@ -1,7 +1,8 @@
 import fs from 'fs-extra';
 import { CI, ciConfigPathPerCi } from 'config';
-import { getOutputFile } from 'helpers';
+import path from 'path';
 import yaml from 'js-yaml';
+import { getOutputDirectory } from 'helpers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UniversalCiConfig = any;
@@ -80,7 +81,7 @@ export const updateCiFiles = (includeCypress: boolean, ci: CI): void => {
 
   console.log('Updating CI config files...');
 
-  const ciConfigPath = getOutputFile(ciConfigPathPerCi[ci]);
+  const ciConfigPath = path.join(getOutputDirectory(), ciConfigPathPerCi[ci]);
   const ciConfig = yaml.safeLoad(
     fs.readFileSync(ciConfigPath, 'utf8').toString(),
     {

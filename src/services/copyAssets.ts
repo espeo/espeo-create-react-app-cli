@@ -1,7 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { CI, ReduxMiddleware, PackageManager } from 'config';
-import { getOutputFile, filterProjectAssets } from 'helpers';
+import {
+  filterProjectAssets,
+  getOutputDirectory,
+  getTemplatesDirectory,
+} from 'helpers';
 
 export const copyAssets = async (
   includeCypress: boolean,
@@ -11,9 +15,9 @@ export const copyAssets = async (
 ): Promise<void> => {
   console.info('Copying CEA files...');
 
-  const projectTemplate = path.join(__dirname, '../packageTemplate');
+  const projectTemplate = path.join(getTemplatesDirectory(), 'packageTemplate');
 
-  await fs.copy(projectTemplate, getOutputFile(''), {
+  await fs.copy(projectTemplate, getOutputDirectory(), {
     filter: filterProjectAssets(ci, includeCypress, middleware, packageManager),
   });
 

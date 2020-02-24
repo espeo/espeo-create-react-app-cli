@@ -5,16 +5,20 @@ import {
   ReduxMiddleware,
   supportedReduxMiddlewares,
 } from 'config';
-import { getOutputFile, getTemplateFile } from 'helpers';
+import path from 'path';
+import { getOutputDirectory, getTemplatesDirectory } from 'helpers';
 
 export const updateStoreConfig = async (
   middleware: ReduxMiddleware,
 ): Promise<void> => {
   console.log('Updating store...');
 
-  const storeConfigSrc = getOutputFile(projectFilesToOverride.storeConfig);
+  const storeConfigSrc = path.join(
+    getOutputDirectory(),
+    projectFilesToOverride.storeConfig,
+  );
   const storeConfigTemplateFile = fs.readFileSync(
-    getTemplateFile('/store/storeConfig.ts'),
+    path.join(getTemplatesDirectory(), '/store/storeConfig.ts'),
   );
 
   if (!storeConfigTemplateFile) {

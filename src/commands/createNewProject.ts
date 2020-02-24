@@ -5,6 +5,7 @@ import {
   updateCiFiles,
   updateStoreConfig,
   installDependencies,
+  cloneProjectTemplate,
 } from 'services';
 import { withOutdatedCheck } from 'decorators';
 import { compose } from 'helpers';
@@ -62,6 +63,7 @@ const execute: Command<CreateNewProjectCommandOptions> = async ({
       ci,
     } = await inquirer.prompt(questions);
 
+    await cloneProjectTemplate();
     await copyAssets(includeCypress, middleware, ci, packageManager);
     updatePackageJson(includeCypress, middleware);
     await updateStoreConfig(middleware);
