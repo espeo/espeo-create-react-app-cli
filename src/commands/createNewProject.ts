@@ -8,7 +8,7 @@ import {
   cloneProjectTemplate,
 } from 'services';
 import { withOutdatedCheck } from 'decorators';
-import { compose } from 'helpers';
+import { compose, exec } from 'helpers';
 import inquirer from 'inquirer';
 import {
   supportedReduxMiddlewares,
@@ -74,4 +74,4 @@ const execute: Command<CreateNewProjectCommandOptions> = async ({
   }
 };
 
-export const createNewProject = compose(withOutdatedCheck)(execute);
+export const createNewProject = compose(withOutdatedCheck(exec))(execute);

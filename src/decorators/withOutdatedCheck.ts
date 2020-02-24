@@ -1,11 +1,11 @@
 import { Command } from 'core';
-import { exec } from 'helpers';
+import { Exec } from 'helpers';
 import { name as packageName } from './../../package.json';
 import { gt } from 'semver';
 
-export const withOutdatedCheck = <T>(command: Command<T>) => async (
-  options: T,
-): Promise<void> => {
+export const withOutdatedCheck = (exec: Exec) => <T>(
+  command: Command<T>,
+) => async (options: T): Promise<void> => {
   const currentVersion = await exec('espeo -v');
   const latestVersion = await exec(`npm show ${packageName} version`);
 

@@ -3,7 +3,7 @@ import { UnexpectedCommandArgumentError } from 'errors';
 import { Command } from 'core';
 import { generateComponent, generateStore } from 'services';
 import { withOutdatedCheck } from 'decorators';
-import { compose } from 'helpers';
+import { compose, exec } from 'helpers';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
@@ -33,4 +33,4 @@ const execute: Command<GenerateCommandOptions> = async ({
   }
 };
 
-export const generate = compose(withOutdatedCheck)(execute);
+export const generate = compose(withOutdatedCheck(exec))(execute);
