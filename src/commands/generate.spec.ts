@@ -1,5 +1,6 @@
 import { generateCommandFactory } from 'commands';
 import path from 'path';
+import { UnexpectedCommandArgumentError } from 'errors';
 
 const generateComponent = jest.fn();
 const generateStore = jest.fn();
@@ -9,19 +10,15 @@ const generateCommandMock = generateCommandFactory({
   generateStore,
 });
 
-it('should catch UnexpectedCommandArgumentError', async () => {
-  const consoleErrorSpy = jest.spyOn(global.console, 'error');
-
-  await generateCommandMock({
-    name: 'test',
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    type: 'wrongType' as any,
-    functional: true,
-  });
-
-  expect(consoleErrorSpy).toBeCalledWith(
-    `error: unexpected value passed for argument type`,
-  );
+it('should throw `UnexpectedCommandArgumentError`', async () => {
+  expect(
+    generateCommandMock({
+      name: 'test',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: 'wrongType' as any,
+      functional: true,
+    }),
+  ).rejects.toEqual(new UnexpectedCommandArgumentError('type'));
 });
 
 it('should call `generateStore` service', async () => {

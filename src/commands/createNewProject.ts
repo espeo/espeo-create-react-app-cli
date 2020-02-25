@@ -71,23 +71,19 @@ const createNewProject = ({
 }: CreateNewProjectCommandInput): CreateNewProjectCommand => async ({
   projectName,
 }): Promise<void> => {
-  try {
-    const {
-      includeCypress,
-      packageManager,
-      middleware,
-      ci,
-    } = await inquirer.prompt(questions);
+  const {
+    includeCypress,
+    packageManager,
+    middleware,
+    ci,
+  } = await inquirer.prompt(questions);
 
-    await cloneProjectTemplate();
-    await copyAssets(includeCypress, middleware, ci, packageManager);
-    updatePackageJson(includeCypress, middleware);
-    await updateStoreConfig(middleware);
-    updateCiFiles(includeCypress, ci);
-    await installDependencies(packageManager, projectName);
-  } catch (e) {
-    console.error(e.message);
-  }
+  await cloneProjectTemplate();
+  await copyAssets(includeCypress, middleware, ci, packageManager);
+  updatePackageJson(includeCypress, middleware);
+  await updateStoreConfig(middleware);
+  updateCiFiles(includeCypress, ci);
+  await installDependencies(packageManager, projectName);
 };
 
 export const createNewProjectCommandFactory = compose(
