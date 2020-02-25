@@ -7,12 +7,19 @@ import {
   getTemplatesDirectory,
 } from 'helpers';
 
-export const copyAssets = async (
+export type CopyAssets = (
   includeCypress: boolean,
   middleware: ReduxMiddleware,
   ci: CI,
   packageManager: PackageManager,
-): Promise<void> => {
+) => Promise<void>;
+
+export const copyAssets: CopyAssets = async (
+  includeCypress,
+  middleware,
+  ci,
+  packageManager,
+) => {
   console.info('Copying CEA files...');
 
   const projectTemplate = path.join(getTemplatesDirectory(), 'packageTemplate');

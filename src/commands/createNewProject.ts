@@ -1,12 +1,4 @@
 import { Command } from 'core';
-import {
-  copyAssets,
-  updatePackageJson,
-  updateCiFiles,
-  updateStoreConfig,
-  installDependencies,
-  cloneProjectTemplate,
-} from 'services';
 import { withOutdatedCheck } from 'decorators';
 import { compose, exec } from 'helpers';
 import inquirer from 'inquirer';
@@ -16,8 +8,14 @@ import {
   CI,
   ReduxMiddleware,
 } from 'config';
-
-type CreateNewProjectCommandOptions = { projectName: string };
+import {
+  CopyAssets,
+  UpdatePackageJson,
+  UpdateCiFiles,
+  UpdateStoreConfig,
+  InstallDependencies,
+  CloneProjectTemplate,
+} from 'services';
 
 export type Answers = {
   includeCypress: boolean;
@@ -52,9 +50,27 @@ export const questions: inquirer.QuestionCollection<Answers> = [
   },
 ];
 
-const execute: Command<CreateNewProjectCommandOptions> = async ({
+type CreateNewProjectCommand = Command<{ projectName: string }>;
+
+type CreateNewProjectCommandInput = {
+  copyAssets: CopyAssets;
+  updatePackageJson: UpdatePackageJson;
+  updateCiFiles: UpdateCiFiles;
+  updateStoreConfig: UpdateStoreConfig;
+  installDependencies: InstallDependencies;
+  cloneProjectTemplate: CloneProjectTemplate;
+};
+
+const createNewProject = ({
+  cloneProjectTemplate,
+  copyAssets,
+  installDependencies,
+  updateCiFiles,
+  updatePackageJson,
+  updateStoreConfig,
+}: CreateNewProjectCommandInput): CreateNewProjectCommand => async ({
   projectName,
-}) => {
+}): Promise<void> => {
   try {
     const {
       includeCypress,
@@ -74,4 +90,7 @@ const execute: Command<CreateNewProjectCommandOptions> = async ({
   }
 };
 
-export const createNewProject = compose(withOutdatedCheck(exec))(execute);
+export const createNewProjectCommandFactory = compose(
+  withOutdatedCheck(exec),
+  createNewProject,
+);

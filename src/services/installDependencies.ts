@@ -2,10 +2,15 @@ import { Spinner } from 'cli-spinner';
 import { PackageManager } from 'config';
 import { exec } from 'helpers';
 
-export const installDependencies = async (
+export type InstallDependencies = (
   packageManager: PackageManager,
   projectName: string,
-): Promise<void> => {
+) => Promise<void>;
+
+export const installDependencies: InstallDependencies = async (
+  packageManager,
+  projectName,
+) => {
   const spinnerInstance = new Spinner('Installing dependencies... %s');
   spinnerInstance.setSpinnerString('|/-\\');
 

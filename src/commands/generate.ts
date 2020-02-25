@@ -1,23 +1,31 @@
 import path from 'path';
 import { UnexpectedCommandArgumentError } from 'errors';
 import { Command } from 'core';
-import { generateComponent, generateStore } from 'services';
+import { GenerateComponent, GenerateStore } from 'services';
 import { withOutdatedCheck } from 'decorators';
 import { compose, exec } from 'helpers';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
-type GenerateCommandOptions = {
+type GenerateCommand = Command<{
   name: string;
   type: GenerateCommandOptionType;
-  functional: boolean;
+  functional?: boolean;
+}>;
+
+type GenerateCommandInput = {
+  generateComponent: GenerateComponent;
+  generateStore: GenerateStore;
 };
 
-const execute: Command<GenerateCommandOptions> = async ({
+const generate = ({
+  generateComponent,
+  generateStore,
+}: GenerateCommandInput): GenerateCommand => async ({
   name,
   type,
   functional,
-}) => {
+}): Promise<void> => {
   try {
     if (type !== 'store' && type !== 'component')
       throw new UnexpectedCommandArgumentError('type');
@@ -27,10 +35,13 @@ const execute: Command<GenerateCommandOptions> = async ({
 
     if (type === 'store') return generateStore(targetName, targetPath);
 
-    return generateComponent(type, functional, targetName, targetPath);
+    return generateComponent(type, functional === true, targetName, targetPath);
   } catch (e) {
     console.error(e.message);
   }
 };
 
-export const generate = compose(withOutdatedCheck(exec))(execute);
+export const generateCommandFactory = compose(
+  withOutdatedCheck(exec),
+  generate,
+);

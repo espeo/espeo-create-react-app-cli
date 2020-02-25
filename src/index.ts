@@ -2,12 +2,33 @@ import program from 'commander';
 import { setupHandlebars } from 'setupHandlebars';
 import { version } from './../package.json';
 import {
-  generate,
-  createNewProject,
+  generateCommandFactory,
+  createNewProjectCommandFactory,
   GenerateCommandOptionType,
 } from 'commands';
+import {
+  generateComponent,
+  generateStore,
+  cloneProjectTemplate,
+  installDependencies,
+  updateCiFiles,
+  updatePackageJson,
+  updateStoreConfig,
+  copyAssets,
+} from 'services';
 
 setupHandlebars();
+
+const generate = generateCommandFactory({ generateComponent, generateStore });
+
+const createNewProject = createNewProjectCommandFactory({
+  cloneProjectTemplate,
+  copyAssets,
+  installDependencies,
+  updateCiFiles,
+  updatePackageJson,
+  updateStoreConfig,
+});
 
 program
   .version(version, '-v, --version')
@@ -19,7 +40,7 @@ program
     (
       type: GenerateCommandOptionType,
       name: string,
-      { functional }: { functional: boolean },
+      { functional }: { functional?: boolean },
     ) =>
       generate({
         name,

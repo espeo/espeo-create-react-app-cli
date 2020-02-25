@@ -10,10 +10,15 @@ import {
 } from 'helpers';
 import path from 'path';
 
-export const updatePackageJson = (
+export type UpdatePackageJson = (
   includeCypress: boolean,
   middleware: ReduxMiddleware,
-): void => {
+) => void;
+
+export const updatePackageJson: UpdatePackageJson = (
+  includeCypress,
+  middleware,
+) => {
   console.info('Updating package.json...');
 
   const packageJsonDir = path.join(getOutputDirectory(), 'package.json');
