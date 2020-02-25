@@ -1,4 +1,4 @@
-import { exec, getTemplatesDirectory } from 'helpers';
+import { exec, getTemplatesDirectory, escapePath } from 'helpers';
 import { projectTemplateRepositoryUrl } from 'config';
 import path from 'path';
 import fs from 'fs';
@@ -48,15 +48,17 @@ export const cloneProjectTemplate: CloneProjectTemplate = async () => {
 
       if (localVersion === remoteVersion) return;
 
-      await exec(`rm -rf ${projectTemplateSrc}`);
+      await exec(`rm -rf ${escapePath(projectTemplateSrc)}`);
     }
 
     spinnerInstance.start();
 
     await exec(
-      `git clone ${projectTemplateRepositoryUrl} ${projectTemplateSrc}`,
+      `git clone ${projectTemplateRepositoryUrl} ${escapePath(
+        projectTemplateSrc,
+      )}`,
     );
-    await exec(`rm -R ${projectTemplateSrc}/.git`);
+    await exec(`rm -R ${escapePath(projectTemplateSrc)}/.git`);
   } finally {
     spinnerInstance.stop(true);
   }
