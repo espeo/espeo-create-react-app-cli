@@ -1,6 +1,5 @@
 import { withOutdatedCheck } from 'decorators';
 import { Command } from 'core';
-import { exec } from 'helpers';
 
 const command: Command<{ id: string }> = (_options: {
   id: string;
@@ -13,12 +12,15 @@ beforeEach(() => {
 });
 
 it('should return function', () => {
-  expect(typeof withOutdatedCheck(exec)(command)).toEqual('function');
+  const execMock = jest.fn();
+  expect(typeof withOutdatedCheck(execMock)(command)).toEqual('function');
 });
 
 it('should invoke command and pass options', async () => {
+  const execMock = (_: string): Promise<string> => Promise.resolve('0.0.2');
+
   const commandSpy = jest.fn();
-  await withOutdatedCheck(exec)(commandSpy)({ id: '1' });
+  await withOutdatedCheck(execMock)(commandSpy)({ id: '1' });
   expect(commandSpy).toBeCalledWith({ id: '1' });
 });
 
