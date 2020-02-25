@@ -1,33 +1,47 @@
 import path from 'path';
 import { UnexpectedCommandArgumentError } from 'errors';
 import { Command } from 'core';
-import { generateComponent, generateStore } from 'services';
+import { GenerateComponent, GenerateStore } from 'services';
+import { withOutdatedCheck } from 'decorators';
+import { compose, exec } from 'helpers';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
-type GenerateCommandOptions = {
+type GenerateCommand = Command<{
   name: string;
   type: GenerateCommandOptionType;
-  shouldBeFunctionalComponent: boolean;
+  functional?: boolean;
+}>;
+
+type GenerateCommandInput = {
+  generateComponent: GenerateComponent;
+  generateStore: GenerateStore;
 };
 
-export const generate: Command<GenerateCommandOptions> = async ({
+const generate = ({
+  generateComponent,
+  generateStore,
+}: GenerateCommandInput): GenerateCommand => async ({
   name,
   type,
-  shouldBeFunctionalComponent,
-}) => {
-  if (type !== 'store' && type !== 'component')
-    throw new UnexpectedCommandArgumentError('type');
+  functional,
+}): Promise<void> => {
+  try {
+    if (type !== 'store' && type !== 'component')
+      throw new UnexpectedCommandArgumentError('type');
 
-  const targetName = path.basename(name);
-  const targetPath = path.dirname(name);
+    const targetName = path.basename(name);
+    const targetPath = path.dirname(name);
 
-  if (type === 'store') return generateStore(targetName, targetPath);
+    if (type === 'store') return generateStore(targetName, targetPath);
 
-  return generateComponent(
-    type,
-    shouldBeFunctionalComponent,
-    targetName,
-    targetPath,
-  );
+    return generateComponent(type, functional === true, targetName, targetPath);
+  } catch (e) {
+    console.error(e.message);
+  }
 };
+
+export const generateCommandFactory = compose(
+  withOutdatedCheck(exec),
+  generate,
+);

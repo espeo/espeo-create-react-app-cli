@@ -76,7 +76,9 @@ const updateFactory: Record<
   circle: updateCircleConfig,
 };
 
-export const updateCiFiles = (includeCypress: boolean, ci: CI): void => {
+export type UpdateCiFiles = (includeCypress: boolean, ci: CI) => void;
+
+export const updateCiFiles: UpdateCiFiles = (includeCypress, ci) => {
   if (ci === 'none' || includeCypress) return;
 
   console.log('Updating CI config files...');

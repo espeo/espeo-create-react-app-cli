@@ -5,7 +5,7 @@ export class UnexpectedCommandArgumentError extends CommanderError {
     super(
       1,
       'UnexpectedCommandArgumentError',
-      `error: unexpected value passed for argument ${argumentName} `,
+      `error: unexpected value passed for argument ${argumentName}`,
     );
   }
 }

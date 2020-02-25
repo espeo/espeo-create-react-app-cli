@@ -28,7 +28,9 @@ const getLocalPackageVersion = (projectTemplateSrc: string): string => {
   return currentVersion;
 };
 
-export const cloneProjectTemplate = async (): Promise<void> => {
+export type CloneProjectTemplate = () => Promise<void>;
+
+export const cloneProjectTemplate: CloneProjectTemplate = async () => {
   const projectTemplateSrc = path.join(
     getTemplatesDirectory(),
     'packageTemplate',

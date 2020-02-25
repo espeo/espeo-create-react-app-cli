@@ -2,11 +2,18 @@ import { generateFile, getTemplatesDirectory } from 'helpers';
 import { GenerateCommandOptionType } from 'commands';
 import path from 'path';
 
-export const generateComponent = async (
+export type GenerateComponent = (
   type: GenerateCommandOptionType,
   shouldBeFunctionalComponent: boolean,
   targetName: string,
   targetPath: string,
+) => Promise<void>;
+
+export const generateComponent: GenerateComponent = async (
+  type,
+  shouldBeFunctionalComponent,
+  targetName,
+  targetPath,
 ): Promise<void> => {
   const componentType = `${type}.${
     shouldBeFunctionalComponent ? 'functional' : 'class'

@@ -8,9 +8,14 @@ import fs from 'fs';
 import { storeScaffolds } from 'config';
 import path from 'path';
 
-export const generateStore = async (
+export type GenerateStore = (
   targetName: string,
   targetPath: string,
+) => Promise<void>;
+
+export const generateStore: GenerateStore = async (
+  targetName,
+  targetPath,
 ): Promise<void> => {
   await Promise.all(
     storeScaffolds.map(scaffold =>

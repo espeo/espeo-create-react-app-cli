@@ -8,9 +8,9 @@ import {
 import path from 'path';
 import { getOutputDirectory, getTemplatesDirectory } from 'helpers';
 
-export const updateStoreConfig = async (
-  middleware: ReduxMiddleware,
-): Promise<void> => {
+export type UpdateStoreConfig = (middleware: ReduxMiddleware) => Promise<void>;
+
+export const updateStoreConfig: UpdateStoreConfig = async middleware => {
   console.log('Updating store...');
 
   const storeConfigSrc = path.join(
