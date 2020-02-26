@@ -6,3 +6,6 @@ export const getTemplatesDirectory = (): string =>
 
 export const getOutputDirectory = (): string =>
   path.join(process.cwd(), program.args[0]);
+
+export const escapePath = (path: string): string =>
+  path.replace(/(\s+)/g, '\\$1');

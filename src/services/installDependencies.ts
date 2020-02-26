@@ -14,9 +14,11 @@ export const installDependencies: InstallDependencies = async (
   const spinnerInstance = new Spinner('Installing dependencies... %s');
   spinnerInstance.setSpinnerString('|/-\\');
 
-  spinnerInstance.start();
+  try {
+    spinnerInstance.start();
 
-  await exec(`cd ${projectName} && ${packageManager.toLowerCase()} install`);
-
-  spinnerInstance.stop();
+    await exec(`cd ${projectName} && ${packageManager.toLowerCase()} install`);
+  } finally {
+    spinnerInstance.stop(true);
+  }
 };

@@ -16,6 +16,7 @@ import {
   updateStoreConfig,
   copyAssets,
 } from 'services';
+import { Command } from 'core';
 
 setupHandlebars();
 
@@ -30,6 +31,11 @@ const createNewProject = createNewProjectCommandFactory({
   updateStoreConfig,
 });
 
+const runCommand = <T>(command: Command<T>, options: T): Promise<void> =>
+  Promise.resolve(command(options)).catch((error: Error) =>
+    console.error(error.message),
+  );
+
 program
   .version(version, '-v, --version')
   .command('generate <type> <name> ')
@@ -42,7 +48,7 @@ program
       name: string,
       { functional }: { functional?: boolean },
     ) =>
-      generate({
+      runCommand(generate, {
         name,
         type,
         functional,
@@ -54,7 +60,7 @@ program
   .alias('i')
   .description('Create new boilerplate project')
   .action((projectName: string) =>
-    createNewProject({
+    runCommand(createNewProject, {
       projectName,
     }),
   );
@@ -73,10 +79,4 @@ if (process.argv.length > 6) {
   process.exit(1);
 }
 
-try {
-  program.parse(process.argv);
-} catch (err) {
-  const { message } = err as program.CommanderError;
-  console.error(message);
-  process.exit(1);
-}
+program.parse(process.argv);

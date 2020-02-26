@@ -26,19 +26,15 @@ const generate = ({
   type,
   functional,
 }): Promise<void> => {
-  try {
-    if (type !== 'store' && type !== 'component')
-      throw new UnexpectedCommandArgumentError('type');
+  if (type !== 'store' && type !== 'component')
+    throw new UnexpectedCommandArgumentError('type');
 
-    const targetName = path.basename(name);
-    const targetPath = path.dirname(name);
+  const targetName = path.basename(name);
+  const targetPath = path.dirname(name);
 
-    if (type === 'store') return generateStore(targetName, targetPath);
+  if (type === 'store') return generateStore(targetName, targetPath);
 
-    return generateComponent(type, functional === true, targetName, targetPath);
-  } catch (e) {
-    console.error(e.message);
-  }
+  return generateComponent(type, functional === true, targetName, targetPath);
 };
 
 export const generateCommandFactory = compose(

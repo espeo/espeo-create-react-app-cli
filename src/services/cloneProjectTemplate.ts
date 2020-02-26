@@ -1,4 +1,4 @@
-import { exec, getTemplatesDirectory } from 'helpers';
+import { exec, getTemplatesDirectory, escapePath } from 'helpers';
 import { projectTemplateRepositoryUrl } from 'config';
 import path from 'path';
 import fs from 'fs';
@@ -31,29 +31,35 @@ const getLocalPackageVersion = (projectTemplateSrc: string): string => {
 export type CloneProjectTemplate = () => Promise<void>;
 
 export const cloneProjectTemplate: CloneProjectTemplate = async () => {
-  const projectTemplateSrc = path.join(
-    getTemplatesDirectory(),
-    'packageTemplate',
-  );
-
-  const directoryExists = fs.existsSync(projectTemplateSrc);
-
-  if (directoryExists) {
-    const localVersion = getLocalPackageVersion(projectTemplateSrc);
-    const remoteVersion = await getRemotePackageVersion();
-
-    if (localVersion === remoteVersion) return;
-
-    await exec(`rm -rf ${projectTemplateSrc}`);
-  }
-
   const spinnerInstance = new Spinner('Cloning template repository.... %s');
   spinnerInstance.setSpinnerString('|/-\\');
 
-  spinnerInstance.start();
+  try {
+    const projectTemplateSrc = path.join(
+      getTemplatesDirectory(),
+      'packageTemplate',
+    );
 
-  await exec(`git clone ${projectTemplateRepositoryUrl} ${projectTemplateSrc}`);
-  await exec(`rm -R ${projectTemplateSrc}/.git`);
+    const directoryExists = fs.existsSync(projectTemplateSrc);
 
-  spinnerInstance.stop();
+    if (directoryExists) {
+      const localVersion = getLocalPackageVersion(projectTemplateSrc);
+      const remoteVersion = await getRemotePackageVersion();
+
+      if (localVersion === remoteVersion) return;
+
+      await exec(`rm -rf ${escapePath(projectTemplateSrc)}`);
+    }
+
+    spinnerInstance.start();
+
+    await exec(
+      `git clone ${projectTemplateRepositoryUrl} ${escapePath(
+        projectTemplateSrc,
+      )}`,
+    );
+    await exec(`rm -R ${escapePath(projectTemplateSrc)}/.git`);
+  } finally {
+    spinnerInstance.stop(true);
+  }
 };
