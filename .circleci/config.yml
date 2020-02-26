@@ -26,6 +26,9 @@ jobs:
       - run:
           name: Unit tests
           command: yarn test
+      - run:
+          name: Repost coverage
+          command: ./node_modules/.bin/codecov --token="$CODECOV_TOKEN"
       - save_cache:
           paths:
             - node_modules

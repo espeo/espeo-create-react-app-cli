@@ -8,4 +8,5 @@ module.exports = {
   moduleDirectories: ['node_modules', 'src'],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  collectCoverage: true,
 };
