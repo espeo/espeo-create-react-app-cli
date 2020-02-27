@@ -79,10 +79,10 @@ const createNewProject = ({
   } = await inquirer.prompt(questions);
 
   await cloneProjectTemplate();
-  await copyAssets(includeCypress, middleware, ci, packageManager);
-  updatePackageJson(includeCypress, middleware);
-  await updateStoreConfig(middleware);
-  updateCiFiles(includeCypress, ci);
+  await copyAssets(includeCypress, middleware, ci, packageManager, projectName);
+  updatePackageJson(includeCypress, middleware, projectName);
+  await updateStoreConfig(middleware, projectName);
+  updateCiFiles(includeCypress, ci, projectName);
   await installDependencies(packageManager, projectName);
 };
 

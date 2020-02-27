@@ -13,15 +13,20 @@ import path from 'path';
 export type UpdatePackageJson = (
   includeCypress: boolean,
   middleware: ReduxMiddleware,
+  projectName: string,
 ) => void;
 
 export const updatePackageJson: UpdatePackageJson = (
   includeCypress,
   middleware,
+  projectName,
 ) => {
   console.info('Updating package.json...');
 
-  const packageJsonDir = path.join(getOutputDirectory(), 'package.json');
+  const packageJsonDir = path.join(
+    getOutputDirectory(projectName),
+    'package.json',
+  );
   const packageJson = JSON.parse(fs.readFileSync(packageJsonDir).toString());
 
   const removeCypress = compose(

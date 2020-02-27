@@ -76,14 +76,25 @@ const updateFactory: Record<
   circle: updateCircleConfig,
 };
 
-export type UpdateCiFiles = (includeCypress: boolean, ci: CI) => void;
+export type UpdateCiFiles = (
+  includeCypress: boolean,
+  ci: CI,
+  projectName: string,
+) => void;
 
-export const updateCiFiles: UpdateCiFiles = (includeCypress, ci) => {
+export const updateCiFiles: UpdateCiFiles = (
+  includeCypress,
+  ci,
+  projectName,
+) => {
   if (ci === 'none' || includeCypress) return;
 
   console.log('Updating CI config files...');
 
-  const ciConfigPath = path.join(getOutputDirectory(), ciConfigPathPerCi[ci]);
+  const ciConfigPath = path.join(
+    getOutputDirectory(projectName),
+    ciConfigPathPerCi[ci],
+  );
   const ciConfig = yaml.safeLoad(
     fs.readFileSync(ciConfigPath, 'utf8').toString(),
     {

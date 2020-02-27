@@ -1,6 +1,6 @@
 import { generateCommandFactory } from 'commands';
 import path from 'path';
-import { UnexpectedCommandArgumentError } from 'errors';
+import { UnexpectedArgumentsError } from 'errors';
 
 const generateComponent = jest.fn();
 const generateStore = jest.fn();
@@ -10,7 +10,7 @@ const generateCommandMock = generateCommandFactory({
   generateStore,
 });
 
-it('should throw `UnexpectedCommandArgumentError`', async () => {
+it('should throw `UnexpectedArgumentsError`', async () => {
   expect(
     generateCommandMock({
       name: 'test',
@@ -18,7 +18,7 @@ it('should throw `UnexpectedCommandArgumentError`', async () => {
       type: 'wrongType' as any,
       functional: true,
     }),
-  ).rejects.toEqual(new UnexpectedCommandArgumentError('type'));
+  ).rejects.toEqual(new UnexpectedArgumentsError(['type']));
 });
 
 it('should call `generateStore` service', async () => {

@@ -3,6 +3,7 @@ import path from 'path';
 import { handlebars } from 'consolidate';
 import mkdirp from 'mkdirp';
 import { storeScaffolds } from 'config';
+import { TemplateDoesNotExistsError, UnexpectedArgumentsError } from 'errors';
 
 const makeDir = (dir: string): void => {
   if (!fs.existsSync(dir)) {
@@ -38,7 +39,7 @@ const getDisiredDirectory = (
   targetName: string,
 ): string => {
   return shouldMoveToStoreFolder
-    ? `${targetDir}/'store'/${type}`
+    ? `${targetDir}/store/${type}`
     : type.includes('test')
     ? `${targetDir}/${targetName}/spec`
     : `${targetDir}/${targetName}`;
@@ -50,38 +51,36 @@ export const generateFile = async ({
   templateSrc,
   type,
 }: GenerateFileProps): Promise<void> => {
-  if (!fs.existsSync(templateSrc)) {
-    return;
-  }
+  if (!fs.existsSync(templateSrc))
+    throw new TemplateDoesNotExistsError(templateSrc);
 
-  try {
-    const shouldMoveToStoreFolder = storeScaffolds.some(scaffold =>
-      type.includes(scaffold),
-    );
+  if (!targetName || !targetName || !type)
+    throw new UnexpectedArgumentsError(['targetName', 'targetName', 'type']);
 
-    const targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
+  const shouldMoveToStoreFolder = storeScaffolds.some(scaffold =>
+    type.includes(scaffold),
+  );
 
-    const fileName = getFileName(targetName, type);
-    const desiredDir = getDisiredDirectory(
-      shouldMoveToStoreFolder,
-      type,
-      targetDir,
-      targetName,
-    );
+  const targetDir = `${process.cwd()}${targetPath.replace('.', '')}`;
 
-    const file = fs.readFileSync(templateSrc);
-    const fileExt = getFileExtension(templateSrc);
-    const fileContent = await handlebars.render(file.toString(), {
-      name: targetName,
-    });
+  const fileName = getFileName(targetName, type);
+  const desiredDir = getDisiredDirectory(
+    shouldMoveToStoreFolder,
+    type,
+    targetDir,
+    targetName,
+  );
 
-    makeDir(desiredDir);
-    fs.writeFileSync(`${desiredDir}/${fileName}.${fileExt}`, fileContent);
+  const file = fs.readFileSync(templateSrc);
+  const fileExt = getFileExtension(templateSrc);
+  const fileContent = await handlebars.render(file.toString(), {
+    name: targetName,
+  });
 
-    console.log(
-      `Successfully generated ${desiredDir}/${fileName}.${fileExt} file`,
-    );
-  } catch (error) {
-    console.error(error);
-  }
+  makeDir(desiredDir);
+  fs.writeFileSync(`${desiredDir}/${fileName}.${fileExt}`, fileContent);
+
+  console.log(
+    `Successfully generated ${desiredDir}/${fileName}.${fileExt} file`,
+  );
 };

@@ -1,9 +1,9 @@
 import path from 'path';
-import { UnexpectedCommandArgumentError } from 'errors';
+import { UnexpectedArgumentsError } from 'errors';
 import { Command } from 'core';
 import { GenerateComponent, GenerateStore } from 'services';
 import { withOutdatedCheck } from 'decorators';
-import { compose, exec } from 'helpers';
+import { compose, exec, getOutputDirectory } from 'helpers';
 
 export type GenerateCommandOptionType = 'store' | 'component';
 
@@ -27,10 +27,10 @@ const generate = ({
   functional,
 }): Promise<void> => {
   if (type !== 'store' && type !== 'component')
-    throw new UnexpectedCommandArgumentError('type');
+    throw new UnexpectedArgumentsError(['type']);
 
   const targetName = path.basename(name);
-  const targetPath = path.dirname(name);
+  const targetPath = getOutputDirectory(path.dirname(name));
 
   if (type === 'store') return generateStore(targetName, targetPath);
 
