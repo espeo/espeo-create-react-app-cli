@@ -26,10 +26,10 @@ it('should throw UnexpectedArgumentsError', async () => {
   );
 });
 
-it('should generate file', async () => {
+it('should generate file in store directory', async () => {
   await generateFile({
     targetName: 'users',
-    targetPath: 'src/Users',
+    targetPath: 'src',
     type: 'actions',
     templateSrc: 'templates/container.tsx',
   });
@@ -38,7 +38,24 @@ it('should generate file', async () => {
   const lastCreatedFile = [...(fs as any).__getMockedFiles__()].pop();
 
   expect(lastCreatedFile).toEqual({
-    path: './src/Users/store/actions/users.actions.tsx',
+    path: './src/store/actions/users.actions.tsx',
     content: 'users',
+  });
+});
+
+it('should generate file in spec directory', async () => {
+  await generateFile({
+    targetName: 'box',
+    targetPath: 'src',
+    type: 'test',
+    templateSrc: 'templates/container.tsx',
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lastCreatedFile = [...(fs as any).__getMockedFiles__()].pop();
+
+  expect(lastCreatedFile).toEqual({
+    path: './src/box/spec/box.test.tsx',
+    content: 'box',
   });
 });

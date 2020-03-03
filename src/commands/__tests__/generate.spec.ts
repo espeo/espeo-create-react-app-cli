@@ -28,7 +28,10 @@ it('should call `generateStore` service', async () => {
     type: 'store',
   });
 
-  expect(generateStore).toBeCalledWith(path.basename(name), path.dirname(name));
+  expect(generateStore).toBeCalledWith({
+    targetName: path.basename(name),
+    targetPath: path.dirname(name),
+  });
 });
 
 it('should call `generateComponent` service', async () => {
@@ -42,10 +45,9 @@ it('should call `generateComponent` service', async () => {
     functional,
   });
 
-  expect(generateComponent).toBeCalledWith(
-    type,
+  expect(generateComponent).toBeCalledWith({
     functional,
-    path.basename(name),
-    path.dirname(name),
-  );
+    targetName: path.basename(name),
+    targetPath: path.dirname(name),
+  });
 });

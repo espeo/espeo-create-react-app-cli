@@ -1,29 +1,29 @@
 import { generateFile, getTemplatesDirectory } from 'helpers';
-import { GenerateCommandOptionType } from 'commands';
 import path from 'path';
 
+type GenerateComponentInput = {
+  functional: boolean;
+  targetName: string;
+  targetPath: string;
+};
+
 export type GenerateComponent = (
-  type: GenerateCommandOptionType,
-  shouldBeFunctionalComponent: boolean,
-  targetName: string,
-  targetPath: string,
+  input: GenerateComponentInput,
 ) => Promise<void>;
 
-export const generateComponent: GenerateComponent = async (
-  type,
-  shouldBeFunctionalComponent,
+export const generateComponent: GenerateComponent = async ({
+  functional,
   targetName,
   targetPath,
-): Promise<void> => {
-  const componentType = `${type}.${
-    shouldBeFunctionalComponent ? 'functional' : 'class'
-  }`;
+}): Promise<void> => {
+  const baseType = 'component';
+  const componentType = `${baseType}.${functional ? 'functional' : 'class'}`;
 
   await Promise.all([
     generateFile({
       targetName,
       targetPath,
-      templateSrc: path.join(getTemplatesDirectory(), `${type}.test.tsx`),
+      templateSrc: path.join(getTemplatesDirectory(), `${baseType}.test.tsx`),
       type: 'test',
     }),
     generateFile({

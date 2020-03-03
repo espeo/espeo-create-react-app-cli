@@ -32,9 +32,13 @@ const generate = ({
   const targetName = path.basename(name);
   const targetPath = getOutputDirectory(path.dirname(name));
 
-  if (type === 'store') return generateStore(targetName, targetPath);
+  if (type === 'store') return generateStore({ targetName, targetPath });
 
-  return generateComponent(type, functional === true, targetName, targetPath);
+  return generateComponent({
+    functional: functional === true,
+    targetName,
+    targetPath,
+  });
 };
 
 export const generateCommandFactory = compose(

@@ -8,15 +8,17 @@ import fs from 'fs';
 import { storeScaffolds } from 'config';
 import path from 'path';
 
-export type GenerateStore = (
-  targetName: string,
-  targetPath: string,
-) => Promise<void>;
+type GenerateStoreInput = {
+  targetName: string;
+  targetPath: string;
+};
 
-export const generateStore: GenerateStore = async (
+export type GenerateStore = (input: GenerateStoreInput) => Promise<void>;
+
+export const generateStore: GenerateStore = async ({
   targetName,
   targetPath,
-): Promise<void> => {
+}): Promise<void> => {
   await Promise.all(
     storeScaffolds.map(scaffold =>
       Promise.all([
