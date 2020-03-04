@@ -1,6 +1,6 @@
 import { generateCommandFactory } from 'commands';
 import path from 'path';
-import { UnexpectedCommandArgumentError } from 'errors';
+import { UnexpectedArgumentsError } from 'errors';
 
 const generateComponent = jest.fn();
 const generateStore = jest.fn();
@@ -10,7 +10,7 @@ const generateCommandMock = generateCommandFactory({
   generateStore,
 });
 
-it('should throw `UnexpectedCommandArgumentError`', async () => {
+it('should throw `UnexpectedArgumentsError`', async () => {
   expect(
     generateCommandMock({
       name: 'test',
@@ -18,7 +18,7 @@ it('should throw `UnexpectedCommandArgumentError`', async () => {
       type: 'wrongType' as any,
       functional: true,
     }),
-  ).rejects.toEqual(new UnexpectedCommandArgumentError('type'));
+  ).rejects.toEqual(new UnexpectedArgumentsError(['type']));
 });
 
 it('should call `generateStore` service', async () => {
@@ -28,7 +28,10 @@ it('should call `generateStore` service', async () => {
     type: 'store',
   });
 
-  expect(generateStore).toBeCalledWith(path.basename(name), path.dirname(name));
+  expect(generateStore).toBeCalledWith({
+    targetName: path.basename(name),
+    targetPath: path.dirname(name),
+  });
 });
 
 it('should call `generateComponent` service', async () => {
@@ -42,10 +45,9 @@ it('should call `generateComponent` service', async () => {
     functional,
   });
 
-  expect(generateComponent).toBeCalledWith(
-    type,
+  expect(generateComponent).toBeCalledWith({
     functional,
-    path.basename(name),
-    path.dirname(name),
-  );
+    targetName: path.basename(name),
+    targetPath: path.dirname(name),
+  });
 });

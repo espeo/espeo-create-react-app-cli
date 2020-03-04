@@ -1,5 +1,7 @@
 # Create-espeo-app CLI
 
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=shield)](https://circleci.com/gh/espeo/espeo-create-react-app-cli) [![npm version](https://badge.fury.io/js/%40espeo%2Fcreate-espeo-app-cli.svg)](https://badge.fury.io/js/%40espeo%2Fcreate-espeo-app-cli) [![Codecov Coverage](https://img.shields.io/codecov/c/github/espeo/espeo-create-react-app-cli/master.svg?style=flat-square)](https://codecov.io/gh/espeo/espeo-create-react-app-cli/)
+
 ### Installation
 
 ```bash

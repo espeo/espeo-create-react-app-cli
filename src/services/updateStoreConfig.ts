@@ -8,15 +8,22 @@ import {
 import path from 'path';
 import { getOutputDirectory, getTemplatesDirectory } from 'helpers';
 
-export type UpdateStoreConfig = (middleware: ReduxMiddleware) => Promise<void>;
+export type UpdateStoreConfig = (
+  middleware: ReduxMiddleware,
+  projectName: string,
+) => Promise<void>;
 
-export const updateStoreConfig: UpdateStoreConfig = async middleware => {
+export const updateStoreConfig: UpdateStoreConfig = async (
+  middleware,
+  projectName,
+) => {
   console.log('Updating store...');
 
   const storeConfigSrc = path.join(
-    getOutputDirectory(),
+    getOutputDirectory(projectName),
     projectFilesToOverride.storeConfig,
   );
+
   const storeConfigTemplateFile = fs.readFileSync(
     path.join(getTemplatesDirectory(), '/store/storeConfig.ts'),
   );
