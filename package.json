@@ -46,6 +46,9 @@
     "type": "git",
     "url": "https://github.com/espeo/espeo-create-react-app-cli"
   },
+  "resolutions": {
+    "**/optimist/minimist": "0.2.1"
+  },
   "bugs": "https://github.com/espeo/espeo-create-react-app-cli",
   "devDependencies": {
     "@types/cli-spinner": "0.2.0",
