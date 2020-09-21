@@ -6,16 +6,17 @@ import { createEpicMiddleware } from 'redux-observable';
 {{#ifEquals middleware supportedReduxMiddlewares.reduxSaga}}
 import createSagaMiddleware from 'redux-saga';
 ​{{/ifEquals}}
-import { getArticlesService } from '@core/services';
 import { MainArticlesState } from '@pages/MainArticles/namespace';
+{{#ifEquals middleware supportedReduxMiddlewares.reduxObservable}}
+import { getArticlesService } from '@core/services';
 import { MainActions } from '@pages/MainArticles/store/actions';
+import { rootEpic } from './rootEpic';
+{{/ifEquals}}
 import rootReducer from './rootReducer';
 {{#ifEquals middleware supportedReduxMiddlewares.reduxSaga}}
 import rootSaga from './rootSaga';
 ​{{/ifEquals}}
-{{#ifEquals middleware supportedReduxMiddlewares.reduxObservable}}
-import { rootEpic } from './rootEpic';
-{{/ifEquals}}
+
 ​
 export interface RootStore {
   main: MainArticlesState;
